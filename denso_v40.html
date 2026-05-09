@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0046)file:///C:/Users/user/Downloads/denso_v40.html -->
+<html lang="ar" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>دليل قطع الغيار دنسو</title>
 <style>
@@ -98,94 +98,94 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
   body{background:#fff!important;color:#000!important}
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="./denso_v40_files/xlsx.full.min.js.تنزيل"></script>
 </head>
 <body>
 <div class="w">
-  <div id="sync-bar" style="background:#1d4ed8;color:#fff;text-align:center;padding:4px;font-size:12px;display:none">جاري المزامنة...</div>
+  <div id="sync-bar" style="background: rgb(21, 128, 61); color: rgb(255, 255, 255); text-align: center; padding: 4px; font-size: 12px; display: none;">تم المزامنة ✓</div>
 <div class="hdr">
     <div>
-      <h1>&#x62F;&#x644;&#x64A;&#x644; &#x642;&#x637;&#x639; &#x627;&#x644;&#x63A;&#x64A;&#x627;&#x631; &mdash; Denso</h1>
-      <p>&#x642;&#x627;&#x639;&#x62F;&#x629; &#x628;&#x64A;&#x627;&#x646;&#x627;&#x62A; &#x634;&#x627;&#x645;&#x644;&#x629; &#x645;&#x646; &#x645;&#x644;&#x641;&#x627;&#x62A;&#x643; &#x627;&#x644;&#x634;&#x62E;&#x635;&#x64A;&#x629; + &#x643;&#x62A;&#x627;&#x644;&#x648;&#x62C;&#x627;&#x62A; &#x62F;&#x646;&#x633;&#x648; &#x627;&#x644;&#x631;&#x633;&#x645;&#x64A;&#x629;</p>
+      <h1>دليل قطع الغيار — Denso</h1>
+      <p>قاعدة بيانات شاملة من ملفاتك الشخصية + كتالوجات دنسو الرسمية</p>
     </div>
-    <div class="pill"><b id="tc">0</b> &#x642;&#x637;&#x639;&#x629; &#x645;&#x62D;&#x641;&#x648;&#x638;&#x629;</div>
+    <div class="pill"><b id="tc">1115</b> قطعة محفوظة</div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" onclick="sw('search',this)">&#x627;&#x644;&#x628;&#x62D;&#x62B;</button>
-    <button class="tab" onclick="sw('add',this)">&#x625;&#x636;&#x627;&#x641;&#x629; &#x642;&#x637;&#x639;&#x629;</button>
-    <button class="tab" onclick="sw('manage',this)">&#x625;&#x62F;&#x627;&#x631;&#x629; &#x627;&#x644;&#x642;&#x627;&#x626;&#x645;&#x629;</button>
-    <button class="tab" onclick="sw('suppliers',this)">&#x627;&#x644;&#x645;&#x648;&#x631;&#x62F;&#x64A;&#x646;</button>
-    <button class="tab" onclick="sw('review',this)">&#x645;&#x631;&#x627;&#x62C;&#x639;&#x629; &#x627;&#x644;&#x645;&#x644;&#x641;</button>
-    <button class="tab" onclick="sw('orders',this)">&#x627;&#x644;&#x637;&#x644;&#x628;&#x627;&#x62A;</button>
-    <button class="tab" onclick="sw('io',this)">&#x627;&#x633;&#x62A;&#x64A;&#x631;&#x627;&#x62F; / &#x62A;&#x635;&#x62F;&#x64A;&#x631;</button>
+    <button class="tab active" onclick="sw(&#39;search&#39;,this)">البحث</button>
+    <button class="tab" onclick="sw(&#39;add&#39;,this)">إضافة قطعة</button>
+    <button class="tab" onclick="sw(&#39;manage&#39;,this)">إدارة القائمة</button>
+    <button class="tab" onclick="sw(&#39;suppliers&#39;,this)">الموردين</button>
+    <button class="tab" onclick="sw(&#39;review&#39;,this)">مراجعة الملف</button>
+    <button class="tab" onclick="sw(&#39;orders&#39;,this)">الطلبات</button>
+    <button class="tab" onclick="sw(&#39;io&#39;,this)">استيراد / تصدير</button>
   </div>
 
   <div id="tab-search" class="panel active">
     <div class="sw">
-      <span class="si">&#x2315;</span>
+      <span class="si">⌕</span>
       <input type="text" id="s-inp" placeholder="Search by Denso No, Toyota No, or part name..." oninput="doSearch()" autocomplete="off">
     </div>
     <div class="fb">
-      <select id="f-cat" onchange="doSearch()"><option value=""></option></select>
+      <select id="f-cat" onchange="doSearch()"><option value="">كل الفئات</option><option value="بلف مكيف">بلف مكيف</option><option value="ثلاجة مكيف">ثلاجة مكيف</option><option value="رديتر ماء">رديتر ماء</option><option value="رديتر مكيف">رديتر مكيف</option><option value="طرمبة بنزين">طرمبة بنزين</option><option value="فلاتر">فلاتر</option><option value="فلاتر مكيف">فلاتر مكيف</option><option value="فلتر زيت">فلتر زيت</option><option value="فلتر هواء">فلتر هواء</option><option value="كلتش مكيف">كلتش مكيف</option><option value="كمبريسور مكيف">كمبريسور مكيف</option><option value="كويل إشعال">كويل إشعال</option><option value="متنوع">متنوع</option><option value="مروحة">مروحة</option></select>
       <select id="f-stk" onchange="doSearch()">
-        <option value="">&#x643;&#x644; &#x627;&#x644;&#x642;&#x637;&#x639;</option>
-        <option value="1">&#x639;&#x646;&#x62F;&#x64A; &#x645;&#x62E;&#x632;&#x648;&#x646; &#x641;&#x642;&#x637;</option>
+        <option value="">كل القطع</option>
+        <option value="1">عندي مخزون فقط</option>
       </select>
     </div>
-    <div id="s-res"><div class="empty">&#x627;&#x643;&#x62A;&#x628; &#x644;&#x644;&#x628;&#x62D;&#x62B;</div></div>
+    <div id="s-res"><div class="empty">اكتب للبحث في 1115 قطعة</div></div>
   </div>
 
   <div id="tab-add" class="panel">
     <div class="card">
-      <div class="slbl">&#x623;&#x631;&#x642;&#x627;&#x645; Denso</div>
-      <div id="d-inp"></div>
-      <button class="add-btn" onclick="addField('d')">+ &#x625;&#x636;&#x627;&#x641;&#x629; &#x631;&#x642;&#x645; Denso &#x622;&#x62E;&#x631;</button>
+      <div class="slbl">أرقام Denso</div>
+      <div id="d-inp"><div class="fr" id="d-row-1"><input type="text" id="d-1" placeholder="Denso No (e.g. 422176-3420)" dir="ltr"></div></div>
+      <button class="add-btn" onclick="addField(&#39;d&#39;)">+ إضافة رقم Denso آخر</button>
     </div>
     <div class="card">
-      <div class="slbl">&#x623;&#x631;&#x642;&#x627;&#x645; Toyota &#x627;&#x644;&#x645;&#x642;&#x627;&#x628;&#x644;&#x629;</div>
-      <div id="t-inp"></div>
-      <button class="add-btn" onclick="addField('t')">+ &#x625;&#x636;&#x627;&#x641;&#x629; &#x631;&#x642;&#x645; Toyota &#x622;&#x62E;&#x631;</button>
+      <div class="slbl">أرقام Toyota المقابلة</div>
+      <div id="t-inp"><div class="fr" id="t-row-1"><input type="text" id="t-1" placeholder="Toyota No (e.g. 16400-0C180)" dir="ltr"></div></div>
+      <button class="add-btn" onclick="addField(&#39;t&#39;)">+ إضافة رقم Toyota آخر</button>
     </div>
     <div class="card">
-      <div class="slbl">&#x62A;&#x641;&#x627;&#x635;&#x64A;&#x644; &#x627;&#x644;&#x642;&#x637;&#x639;&#x629;</div>
+      <div class="slbl">تفاصيل القطعة</div>
       <div class="fr" style="margin-bottom:8px">
-        <input type="text" id="n-ar" placeholder="&#x627;&#x644;&#x627;&#x633;&#x645; &#x628;&#x627;&#x644;&#x639;&#x631;&#x628;&#x64A;" dir="rtl" class="ni" style="flex:1">
+        <input type="text" id="n-ar" placeholder="الاسم بالعربي" dir="rtl" class="ni" style="flex:1">
       </div>
       <div class="fr" style="margin-bottom:8px">
         <input type="text" id="n-en" placeholder="English name (optional)" dir="ltr" class="ni" style="flex:1">
       </div>
       <div class="fr">
         <select id="n-cat" class="ni">
-          <option value="">-- &#x627;&#x644;&#x641;&#x626;&#x629; --</option>
-          <option>&#x631;&#x62F;&#x64A;&#x62A;&#x631; &#x645;&#x627;&#x621;</option>
-          <option>&#x631;&#x62F;&#x64A;&#x62A;&#x631; &#x645;&#x643;&#x64A;&#x641;</option>
-          <option>&#x62B;&#x644;&#x627;&#x62C;&#x629; &#x645;&#x643;&#x64A;&#x641;</option>
-          <option>&#x643;&#x645;&#x628;&#x631;&#x64A;&#x633;&#x648;&#x631; &#x645;&#x643;&#x64A;&#x641;</option>
-          <option>&#x643;&#x644;&#x62A;&#x634; &#x645;&#x643;&#x64A;&#x641;</option>
-          <option>&#x628;&#x644;&#x641; &#x645;&#x643;&#x64A;&#x641;</option>
-          <option>&#x645;&#x631;&#x648;&#x62D;&#x629;</option>
-          <option>&#x643;&#x648;&#x64A;&#x644; &#x625;&#x634;&#x639;&#x627;&#x644;</option>
-          <option>&#x637;&#x631;&#x645;&#x628;&#x629; &#x628;&#x646;&#x632;&#x64A;&#x646;</option>
-          <option>&#x641;&#x644;&#x627;&#x62A;&#x631;</option>
-          <option>&#x641;&#x644;&#x627;&#x62A;&#x631; &#x645;&#x643;&#x64A;&#x641;</option>
-          <option>&#x645;&#x62A;&#x646;&#x648;&#x639;</option>
+          <option value="">-- الفئة --</option>
+          <option>رديتر ماء</option>
+          <option>رديتر مكيف</option>
+          <option>ثلاجة مكيف</option>
+          <option>كمبريسور مكيف</option>
+          <option>كلتش مكيف</option>
+          <option>بلف مكيف</option>
+          <option>مروحة</option>
+          <option>كويل إشعال</option>
+          <option>طرمبة بنزين</option>
+          <option>فلاتر</option>
+          <option>فلاتر مكيف</option>
+          <option>متنوع</option>
         </select>
-        <input type="number" id="n-pr" placeholder="&#x627;&#x644;&#x633;&#x639;&#x631; AED" style="max-width:140px;flex:0 0 140px" step="0.01">
-        <input type="number" id="n-qt" placeholder="&#x627;&#x644;&#x643;&#x645;&#x64A;&#x629;" style="max-width:100px;flex:0 0 100px">
+        <input type="number" id="n-pr" placeholder="السعر AED" style="max-width:140px;flex:0 0 140px" step="0.01">
+        <input type="number" id="n-qt" placeholder="الكمية" style="max-width:100px;flex:0 0 100px">
       </div>
     </div>
     <div class="btn-row">
-      <button class="btn prim" onclick="addEntry()">&#x62D;&#x641;&#x638; &#x627;&#x644;&#x642;&#x637;&#x639;&#x629;</button>
-      <button class="btn" onclick="resetForm()">&#x645;&#x633;&#x62D;</button>
+      <button class="btn prim" onclick="addEntry()">حفظ القطعة</button>
+      <button class="btn" onclick="resetForm()">مسح</button>
     </div>
   </div>
 
   <div id="tab-manage" class="panel">
     <div class="card">
       <div class="frow">
-        <input type="text" id="m-f" placeholder="&#x62A;&#x635;&#x641;&#x64A;&#x629;..." oninput="renderTable()" dir="ltr">
-        <button class="btn dngr sm" onclick="clearAll()">&#x62D;&#x630;&#x641; &#x627;&#x644;&#x643;&#x644;</button>
+        <input type="text" id="m-f" placeholder="تصفية..." oninput="renderTable()" dir="ltr">
+        <button class="btn dngr sm" onclick="clearAll()">حذف الكل</button>
       </div>
       <div class="tw">
         <table>
@@ -195,15 +195,15 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
               <th>#</th>
               <th>Denso</th>
               <th>Toyota OEM</th>
-              <th>&#x627;&#x644;&#x627;&#x633;&#x645;</th>
-              <th>&#x627;&#x644;&#x641;&#x626;&#x629;</th>
+              <th>الاسم</th>
+              <th>الفئة</th>
               <th></th>
             </tr>
           </thead>
           <tbody id="m-tb"></tbody>
         </table>
       </div>
-      <div id="m-empty" class="empty" style="display:none">&#x644;&#x627; &#x62A;&#x648;&#x62C;&#x62F; &#x628;&#x64A;&#x627;&#x646;&#x627;&#x62A;</div>
+      <div id="m-empty" class="empty" style="display:none">لا توجد بيانات</div>
     </div>
   </div>
 
@@ -215,17 +215,17 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
         <button class="btn prim" onclick="addSup()">إضافة</button>
       </div>
     </div>
-    <div id="sup-list" style="margin-top:8px"></div>
+    <div id="sup-list" style="margin-top:8px"><div style="background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);padding:.9rem 1.25rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:15px;font-weight:500">عالم</div><div style="font-size:12px;color:var(--text2)">0 قطعة لها سعر</div></div><button onclick="delSup(1001)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--red-b);background:none;color:var(--red);cursor:pointer">حذف</button></div><div style="background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);padding:.9rem 1.25rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:15px;font-weight:500">نجداوي</div><div style="font-size:12px;color:var(--text2)">0 قطعة لها سعر</div></div><button onclick="delSup(1002)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--red-b);background:none;color:var(--red);cursor:pointer">حذف</button></div><div style="background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);padding:.9rem 1.25rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:15px;font-weight:500">DJ AUTO</div><div style="font-size:12px;color:var(--text2)">0 قطعة لها سعر</div></div><button onclick="delSup(1003)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--red-b);background:none;color:var(--red);cursor:pointer">حذف</button></div></div>
     <div class="card" style="margin-top:8px">
-      <div class="slbl">&#x0627;&#x0633;&#x062A;&#x064A;&#x0631;&#x0627;&#x062F; &#x0645;&#x0646; Excel</div><div style="font-size:12px;color:var(--text3);margin-bottom:8px">&#x0639;&#x0645;&#x0648;&#x062F; A: &#x0631;&#x0642;&#x0645; &#x062F;&#x0646;&#x0633;&#x0648; &nbsp;|&nbsp; B: &#x0627;&#x0644;&#x0633;&#x0639;&#x0631; &nbsp;|&nbsp; C: &#x0627;&#x0633;&#x0645; &#x0627;&#x0644;&#x0642;&#x0637;&#x0639;&#x0629; (&#x0627;&#x062E;&#x062A;&#x064A;&#x0627;&#x0631;&#x064A;)</div>
+      <div class="slbl">استيراد من Excel</div><div style="font-size:12px;color:var(--text3);margin-bottom:8px">عمود A: رقم دنسو &nbsp;|&nbsp; B: السعر &nbsp;|&nbsp; C: اسم القطعة (اختياري)</div>
       <div class="fr" style="margin-bottom:8px">
-        <select id="imp-sup" style="flex:1"><option value="">-- &#x0627;&#x062E;&#x062A;&#x0631; &#x0627;&#x0644;&#x0645;&#x0648;&#x0631;&#x062F; --</option></select>
+        <select id="imp-sup" style="flex:1"><option value="">-- اختر المورد --</option></select>
       </div>
       <div class="fr" style="margin-bottom:8px">
         <input type="file" id="imp-file" accept=".xlsx,.xls,.csv" style="flex:1;font-size:13px">
       </div>
       <div class="btn-row">
-        <button class="btn prim" onclick="importSupPrices()">&#x0627;&#x0633;&#x062A;&#x064A;&#x0631;&#x0627;&#x062F;</button>
+        <button class="btn prim" onclick="importSupPrices()">استيراد</button>
       </div>
       <div id="imp-result" style="margin-top:10px;font-size:13px;color:var(--text2)"></div>
     </div>
@@ -233,29 +233,29 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
 
   <div id="tab-review" class="panel">
     <div id="review-empty" class="card" style="text-align:center;padding:2rem;color:var(--text2)">
-      &#x0627;&#x0631;&#x0641;&#x0639; &#x0645;&#x0644;&#x0641; Excel &#x0645;&#x0646; &#x062A;&#x0628;&#x0648;&#x064A;&#x0628; &#x0627;&#x0644;&#x0645;&#x0648;&#x0631;&#x062F;&#x064A;&#x0646; &#x0644;&#x062A;&#x0638;&#x0647;&#x0631; &#x0647;&#x0646;&#x0627;
+      ارفع ملف Excel من تبويب الموردين لتظهر هنا
     </div>
     <div id="review-content" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
         <div style="font-size:14px;font-weight:500" id="review-title"></div>
         <div style="display:flex;gap:8px">
-          <button class="btn prim" onclick="orderAll()">&#x0637;&#x0644;&#x0628; &#x0627;&#x0644;&#x0643;&#x0644;</button>
-          <button class="btn" onclick="window.print()">&#x0637;&#x0628;&#x0627;&#x0639;&#x0629; / PDF</button>
-          <button class="btn" onclick="clearReview()">&#x0645;&#x0633;&#x062D;</button>
+          <button class="btn prim" onclick="orderAll()">طلب الكل</button>
+          <button class="btn" onclick="window.print()">طباعة / PDF</button>
+          <button class="btn" onclick="clearReview()">مسح</button>
         </div>
       </div>
       <div class="tw">
         <table>
           <thead>
             <tr>
-              <th>&#x0631;&#x0642;&#x0645; &#x062F;&#x0646;&#x0633;&#x0648;</th>
-              <th>&#x0627;&#x0644;&#x0646;&#x0648;&#x0639;</th>
-              <th>&#x0627;&#x0633;&#x0645; &#x0627;&#x0644;&#x0642;&#x0637;&#x0639;&#x0629;</th>
-              <th>&#x0633;&#x0639;&#x0631; &#x0627;&#x0644;&#x0645;&#x0648;&#x0631;&#x062F;</th>
+              <th>رقم دنسو</th>
+              <th>النوع</th>
+              <th>اسم القطعة</th>
+              <th>سعر المورد</th>
               <th style="color:var(--org)">DJ AUTO</th>
               <th style="color:#00d4a0">Toyota OEM</th>
               <th style="color:var(--org)">DJ AUTO</th>
-              <th>&#x0627;&#x0644;&#x0643;&#x0645;&#x064A;&#x0629;</th>
+              <th>الكمية</th>
               <th></th>
             </tr>
           </thead>
@@ -267,113 +267,113 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
 
   <div id="tab-orders" class="panel">
     <div class="card">
-      <div class="slbl">&#x637;&#x644;&#x628; &#x62C;&#x62F;&#x64A;&#x62F;</div>
+      <div class="slbl">طلب جديد</div>
       <div class="fr" style="margin-bottom:7px">
-        <input type="text" id="ord-pn" placeholder="&#x631;&#x642;&#x645; &#x627;&#x644;&#x642;&#x637;&#x639;&#x629;" dir="ltr" style="flex:1;font-family:monospace">
-        <input type="number" id="ord-qty" placeholder="&#x643;&#x645;&#x64A;&#x629;" style="max-width:80px;flex:0 0 80px" min="1">
+        <input type="text" id="ord-pn" placeholder="رقم القطعة" dir="ltr" style="flex:1;font-family:monospace">
+        <input type="number" id="ord-qty" placeholder="كمية" style="max-width:80px;flex:0 0 80px" min="1">
       </div>
       <div class="fr" style="margin-bottom:7px">
-        <select id="ord-sup" style="flex:1"><option value="">&#x627;&#x644;&#x645;&#x648;&#x631;&#x62F;</option></select>
-        <input type="number" id="ord-price" placeholder="&#x633;&#x639;&#x631; &#x631;.س" style="max-width:110px;flex:0 0 110px" step="0.01">
+        <select id="ord-sup" style="flex:1"><option value="">المورد</option></select>
+        <input type="number" id="ord-price" placeholder="سعر ر.س" style="max-width:110px;flex:0 0 110px" step="0.01">
       </div>
       <div class="fr" style="margin-bottom:7px">
         <input type="date" id="ord-date" style="flex:1">
         <select id="ord-status" style="flex:1">
-          <option value="ordered">&#x62A;&#x645; &#x627;&#x644;&#x637;&#x644;&#x628;</option>
-          <option value="partial">&#x648;&#x635;&#x644; &#x62C;&#x632;&#x621;</option>
-          <option value="received">&#x648;&#x635;&#x644; &#x643;&#x627;&#x645;&#x644;</option>
-          <option value="cancelled">&#x645;&#x644;&#x63A;&#x64A;</option>
+          <option value="ordered">تم الطلب</option>
+          <option value="partial">وصل جزء</option>
+          <option value="received">وصل كامل</option>
+          <option value="cancelled">ملغي</option>
         </select>
       </div>
       <div class="fr" style="margin-bottom:7px">
-        <input type="text" id="ord-note" placeholder="&#x645;&#x644;&#x627;&#x62D;&#x638;&#x627;&#x62A;" dir="rtl" style="flex:1">
+        <input type="text" id="ord-note" placeholder="ملاحظات" dir="rtl" style="flex:1">
       </div>
       <div class="btn-row">
-        <button class="btn prim" onclick="addOrder()">&#x62D;&#x641;&#x638; &#x627;&#x644;&#x637;&#x644;&#x628;</button>
+        <button class="btn prim" onclick="addOrder()">حفظ الطلب</button>
       </div>
     </div>
-    <div id="ord-list" style="margin-top:8px"></div>
+    <div id="ord-list" style="margin-top:8px"><div style="background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);padding:.9rem 1.25rem;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px"><div style="font-family:monospace;font-size:14px;font-weight:500">FIX-TEST-1778359541961<button class="cp" data-cp="FIX-TEST-1778359541961"> ⧈</button></div><span style="font-size:11px;padding:2px 8px;border-radius:var(--r);background:#eff6ff;color:#1d4ed8">تم الطلب</span></div><div style="font-size:12px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px"><span>كمية: 1</span><span>سعر: 100.00 ر.س</span><span>مجموع: 100.00 ر.س</span><span>2026-05-09</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button data-id="1778359541961" data-status="received" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--grn);background:none;color:var(--grn);cursor:pointer">وصل كامل</button><button data-id="1778359541961" data-status="partial" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">وصل جزء</button><button data-id="1778359541961" data-status="cancelled" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">إلغاء</button><button data-id="1778359541961" onclick="deleteOrder(+this.dataset.id)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--red-b);background:none;color:var(--red);cursor:pointer">حذف</button></div></div><div style="background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);padding:.9rem 1.25rem;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px"><div style="font-family:monospace;font-size:14px;font-weight:500">AUTO-TEST-1778359520256<button class="cp" data-cp="AUTO-TEST-1778359520256"> ⧈</button></div><span style="font-size:11px;padding:2px 8px;border-radius:var(--r);background:#eff6ff;color:#1d4ed8">تم الطلب</span></div><div style="font-size:12px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px"><span>كمية: 1</span><span>سعر: 100.00 ر.س</span><span>مجموع: 100.00 ر.س</span><span>2026-05-09</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button data-id="1778359520256" data-status="received" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--grn);background:none;color:var(--grn);cursor:pointer">وصل كامل</button><button data-id="1778359520256" data-status="partial" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">وصل جزء</button><button data-id="1778359520256" data-status="cancelled" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">إلغاء</button><button data-id="1778359520256" onclick="deleteOrder(+this.dataset.id)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--red-b);background:none;color:var(--red);cursor:pointer">حذف</button></div></div><div style="background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);padding:.9rem 1.25rem;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px"><div style="font-family:monospace;font-size:14px;font-weight:500">8850188501<button class="cp" data-cp="8850188501"> ⧈</button></div><span style="font-size:11px;padding:2px 8px;border-radius:var(--r);background:#eff6ff;color:#1d4ed8">تم الطلب</span></div><div style="font-size:12px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px"><span>DJ AUTO</span><span>كمية: 1</span><span>2026-05-09</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button data-id="1778356717473" data-status="received" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--grn);background:none;color:var(--grn);cursor:pointer">وصل كامل</button><button data-id="1778356717473" data-status="partial" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">وصل جزء</button><button data-id="1778356717473" data-status="cancelled" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">إلغاء</button><button data-id="1778356717473" onclick="deleteOrder(+this.dataset.id)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--red-b);background:none;color:var(--red);cursor:pointer">حذف</button></div></div><div style="background:var(--bg);border:.5px solid var(--border);border-radius:var(--rl);padding:.9rem 1.25rem;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px"><div style="font-family:monospace;font-size:14px;font-weight:500">TEST-SYNC-1778359114625<button class="cp" data-cp="TEST-SYNC-1778359114625"> ⧈</button></div><span style="font-size:11px;padding:2px 8px;border-radius:var(--r);background:#eff6ff;color:#1d4ed8">تم الطلب</span></div><div style="font-size:12px;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px"><span>كمية: 1</span><span>سعر: 100.00 ر.س</span><span>مجموع: 100.00 ر.س</span><span>2026-05-09</span><span>test sync</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button data-id="1778359114625" data-status="received" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--grn);background:none;color:var(--grn);cursor:pointer">وصل كامل</button><button data-id="1778359114625" data-status="partial" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">وصل جزء</button><button data-id="1778359114625" data-status="cancelled" onclick="updateOrdStatus(+this.dataset.id,this.dataset.status)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid #888;background:none;color:#888;cursor:pointer">إلغاء</button><button data-id="1778359114625" onclick="deleteOrder(+this.dataset.id)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--red-b);background:none;color:var(--red);cursor:pointer">حذف</button></div></div></div>
     <div class="card" style="margin-top:8px">
       <div class="btn-row">
-        <button class="btn prim" onclick="var hdr='رقم دنسو,الكمية,السعر,الإجمالي,رقم تويوتا,المورد,تاريخ';var lines=[hdr];orders.forEach(function(o){var r=db.find(function(x){var u=o.pn.toUpperCase().replace(/[^A-Z0-9]/g,'');return (x.densos||x.o||[]).some(function(d){return d.toUpperCase().replace(/[^A-Z0-9]/g,'')=== u;});});var toy=r?(r.toyotas||r.t||[]).join(' / '):'';var sup=o.supName||(sups.find(function(s){return s.id==o.supId;})||{}).n||'';lines.push([o.pn,o.qty||1,o.price||0,((o.price||0)*(o.qty||1)).toFixed(2),toy,sup,o.date||''].join(','));});var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(lines.join('
-'));a.download='طلبات_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);">&#x062A;&#x0635;&#x062F;&#x064A;&#x0631; CSV</button>
-        <button class="btn" onclick="window.print()">&#x0637;&#x0628;&#x0627;&#x0639;&#x0629; / PDF</button>
+        <button class="btn prim" onclick="var hdr=&#39;رقم دنسو,الكمية,السعر,الإجمالي,رقم تويوتا,المورد,تاريخ&#39;;var lines=[hdr];orders.forEach(function(o){var r=db.find(function(x){var u=o.pn.toUpperCase().replace(/[^A-Z0-9]/g,&#39;&#39;);return (x.densos||x.o||[]).some(function(d){return d.toUpperCase().replace(/[^A-Z0-9]/g,&#39;&#39;)=== u;});});var toy=r?(r.toyotas||r.t||[]).join(&#39; / &#39;):&#39;&#39;;var sup=o.supName||(sups.find(function(s){return s.id==o.supId;})||{}).n||&#39;&#39;;lines.push([o.pn,o.qty||1,o.price||0,((o.price||0)*(o.qty||1)).toFixed(2),toy,sup,o.date||&#39;&#39;].join(&#39;,&#39;));});var a=document.createElement(&#39;a&#39;);a.href=&#39;data:text/csv;charset=utf-8,﻿&#39;+encodeURIComponent(lines.join(&#39;
+&#39;));a.download=&#39;طلبات_&#39;+new Date().toISOString().slice(0,10)+&#39;.csv&#39;;document.body.appendChild(a);a.click();document.body.removeChild(a);">تصدير CSV</button>
+        <button class="btn" onclick="window.print()">طباعة / PDF</button>
       </div>
     </div>
   </div>
 
   <div id="tab-io" class="panel">
     <div class="card" style="margin-bottom:1rem">
-      <div class="slbl">&#x0645;&#x0641;&#x062A;&#x0627;&#x062D; Claude API (&#x0644;&#x0644;&#x0628;&#x062D;&#x062B; &#x0639;&#x0646; &#x0628;&#x064A;&#x0627;&#x0646;&#x0627;&#x062A; &#x0627;&#x0644;&#x0642;&#x0637;&#x0639;)</div>
+      <div class="slbl">مفتاح Claude API (للبحث عن بيانات القطع)</div>
       <div class="fr" style="margin-bottom:8px">
         <input type="password" id="api-key" placeholder="sk-ant-..." style="flex:1;font-family:monospace;font-size:13px;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)" dir="ltr">
       </div>
       <div class="btn-row">
-        <button class="btn prim" onclick="saveApiKey()">&#x062D;&#x0641;&#x0638; &#x0627;&#x0644;&#x0645;&#x0641;&#x062A;&#x0627;&#x062D;</button>
+        <button class="btn prim" onclick="saveApiKey()">حفظ المفتاح</button>
       </div>
-      <div style="font-size:12px;color:var(--text3);margin-top:8px">&#x0627;&#x062D;&#x0635;&#x0644; &#x0639;&#x0644;&#x0649; &#x0645;&#x0641;&#x062A;&#x0627;&#x062D;&#x0643; &#x0645;&#x0646; console.anthropic.com</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:8px">احصل على مفتاحك من console.anthropic.com</div>
     </div>
     <div class="exp-box">
-      <p>&#x627;&#x62D;&#x641;&#x638; &#x646;&#x633;&#x62E;&#x629; &#x627;&#x62D;&#x62A;&#x64A;&#x627;&#x637;&#x64A;&#x629; &#x645;&#x646; &#x643;&#x644; &#x628;&#x64A;&#x627;&#x646;&#x627;&#x62A;&#x643;</p>
-      <button class="btn prim" onclick="expData()">&#x62A;&#x635;&#x62F;&#x64A;&#x631; &#x646;&#x633;&#x62E;&#x629; &#x627;&#x62D;&#x62A;&#x64A;&#x627;&#x637;&#x64A;&#x629; (JSON)</button>
+      <p>احفظ نسخة احتياطية من كل بياناتك</p>
+      <button class="btn prim" onclick="expData()">تصدير نسخة احتياطية (JSON)</button>
     </div>
     <div class="card" style="margin-bottom:1rem">
-      <div class="slbl">&#x627;&#x633;&#x62A;&#x64A;&#x631;&#x627;&#x62F; &#x645;&#x646; &#x646;&#x633;&#x62E;&#x629; &#x627;&#x62D;&#x62A;&#x64A;&#x627;&#x637;&#x64A;&#x629;</div>
-      <textarea id="i-txt" rows="4" placeholder="&#x627;&#x644;&#x635;&#x642; &#x645;&#x62D;&#x62A;&#x648;&#x649; &#x645;&#x644;&#x641; JSON &#x647;&#x646;&#x627;..."></textarea>
-      <div class="btn-row"><button class="btn" onclick="impData()">&#x627;&#x633;&#x62A;&#x64A;&#x631;&#x627;&#x62F;</button></div>
+      <div class="slbl">استيراد من نسخة احتياطية</div>
+      <textarea id="i-txt" rows="4" placeholder="الصق محتوى ملف JSON هنا..."></textarea>
+      <div class="btn-row"><button class="btn" onclick="impData()">استيراد</button></div>
     </div>
     <div class="card" style="margin-bottom:1rem">
-      <div class="slbl">&#x0633;&#x0639;&#x0631; &#x0627;&#x0644;&#x0635;&#x0631;&#x0641; (&#x0645;&#x0646; &#x0627;&#x0644;&#x0631;&#x064A;&#x0627;&#x0644; &#x0627;&#x0644;&#x0633;&#x0639;&#x0648;&#x062F;&#x064A;)</div>
+      <div class="slbl">سعر الصرف (من الريال السعودي)</div>
       <div class="fr" style="margin-bottom:8px">
-        <label style="font-size:13px;color:var(--text2);min-width:140px">1 &#x062F;.إ = &#x0643;&#x0645; &#x0631;.س</label>
+        <label style="font-size:13px;color:var(--text2);min-width:140px">1 د.إ = كم ر.س</label>
         <input type="number" id="rate-aed" placeholder="1.03" step="0.001" style="width:110px;padding:7px 10px;font-size:13px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)" dir="ltr">
       </div>
       <div class="fr" style="margin-bottom:8px">
-        <label style="font-size:13px;color:var(--text2);min-width:140px">1 $ = &#x0643;&#x0645; &#x0631;.س</label>
+        <label style="font-size:13px;color:var(--text2);min-width:140px">1 $ = كم ر.س</label>
         <input type="number" id="rate-usd" placeholder="3.80" step="0.001" style="width:110px;padding:7px 10px;font-size:13px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)" dir="ltr">
       </div>
       <div class="btn-row">
-        <button class="btn prim" onclick="saveCurr()">&#x062D;&#x0641;&#x0638;</button>
+        <button class="btn prim" onclick="saveCurr()">حفظ</button>
       </div>
     </div>
     <div class="card" style="margin-bottom:1rem">
-      <div class="slbl">&#x062�;&#x0627;&#x0633;&#x0628;&#x0629; &#x0627;&#x0644;&#x0639;&#x0645;&#x0644;&#x0627;&#x062A;</div>
+      <div class="slbl">b�;اسبة العملات</div>
       <div class="fr" style="margin-bottom:8px">
-        <input type="number" id="cv-amount" placeholder="&#x0627;&#x0644;&#x0645;&#x0628;&#x0644;&#x063A;" step="0.01" style="flex:1">
+        <input type="number" id="cv-amount" placeholder="المبلغ" step="0.01" style="flex:1">
         <select id="cv-from" style="flex:1">
-          <option value="sar">&#x0631;&#x064A;&#x0627;&#x0644; &#x0633;&#x0639;&#x0648;&#x062F;&#x064A;</option>
-          <option value="aed">&#x062F;&#x0631;&#x0647;&#x0645; &#x0625;&#x0645;&#x0627;&#x0631;&#x0627;&#x062A;&#x064A;</option>
-          <option value="usd">&#x062F;&#x0648;&#x0644;&#x0627;&#x0631;</option>
+          <option value="sar">ريال سعودي</option>
+          <option value="aed">درهم إماراتي</option>
+          <option value="usd">دولار</option>
         </select>
         <select id="cv-to" style="flex:1">
-          <option value="aed">&#x062F;&#x0631;&#x0647;&#x0645; &#x0625;&#x0645;&#x0627;&#x0631;&#x0627;&#x062A;&#x064A;</option>
-          <option value="sar">&#x0631;&#x064A;&#x0627;&#x0644; &#x0633;&#x0639;&#x0648;&#x062F;&#x064A;</option>
-          <option value="usd">&#x062F;&#x0648;&#x0644;&#x0627;&#x0631;</option>
+          <option value="aed">درهم إماراتي</option>
+          <option value="sar">ريال سعودي</option>
+          <option value="usd">دولار</option>
         </select>
       </div>
       <div class="btn-row">
-        <button class="btn prim" onclick="convertCurr()">&#x062A;&#x062D;&#x0648;&#x064A;&#x0644;</button>
+        <button class="btn prim" onclick="convertCurr()">تحويل</button>
       </div>
       <div id="cv-result" style="margin-top:10px;font-size:18px;font-weight:600;color:var(--text);text-align:center"></div>
     </div>
     <div class="card" style="margin-bottom:1rem">
-      <div class="slbl">&#x0625;&#x0639;&#x062F;&#x0627;&#x062F;&#x0627;&#x062A; &#x0633;&#x0639;&#x0631; &#x0627;&#x0644;&#x0635;&#x0631;&#x0641; (&#x0645;&#x0646; &#x0627;&#x0644;&#x0631;&#x064A;&#x0627;&#x0644; &#x0627;&#x0644;&#x0633;&#x0639;&#x0648;&#x062F;&#x064A;)</div>
+      <div class="slbl">إعدادات سعر الصرف (من الريال السعودي)</div>
       <div class="fr" style="margin-bottom:8px">
-        <label style="font-size:13px;color:var(--text2);min-width:140px">1 &#x062F;.إ = &#x0643;&#x0645; &#x0631;.س</label>
+        <label style="font-size:13px;color:var(--text2);min-width:140px">1 د.إ = كم ر.س</label>
         <input type="number" id="rate-aed" placeholder="1.03" step="0.001" style="width:110px;padding:7px 10px;font-size:13px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)" dir="ltr">
       </div>
       <div class="fr" style="margin-bottom:8px">
-        <label style="font-size:13px;color:var(--text2);min-width:140px">1 $ = &#x0643;&#x0645; &#x0631;.س</label>
+        <label style="font-size:13px;color:var(--text2);min-width:140px">1 $ = كم ر.س</label>
         <input type="number" id="rate-usd" placeholder="3.80" step="0.001" style="width:110px;padding:7px 10px;font-size:13px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)" dir="ltr">
       </div>
       <div class="btn-row">
-        <button class="btn prim" onclick="saveCurr()">&#x062D;&#x0641;&#x0638;</button>
+        <button class="btn prim" onclick="saveCurr()">حفظ</button>
       </div>
     </div>
     <div class="hint">
-      <b>&#x643;&#x64A;&#x641; &#x62A;&#x633;&#x62A;&#x62E;&#x62F;&#x645; &#x627;&#x644;&#x628;&#x631;&#x646;&#x627;&#x645;&#x62C; &#x643;&#x644; &#x633;&#x646;&#x629;&#x61F;</b>
-      &#x642;&#x628;&#x644; &#x646;&#x647;&#x627;&#x64A;&#x629; &#x627;&#x644;&#x633;&#x646;&#x629;: &#x627;&#x636;&#x63A;&#x637; "&#x62A;&#x635;&#x62F;&#x64A;&#x631; &#x646;&#x633;&#x62E;&#x629; &#x627;&#x62D;&#x62A;&#x64A;&#x627;&#x637;&#x64A;&#x629;" &#x648;&#x627;&#x62D;&#x641;&#x638; &#x627;&#x644;&#x645;&#x644;&#x641;.<br>
-      &#x628;&#x62F;&#x627;&#x64A;&#x629; &#x627;&#x644;&#x633;&#x646;&#x629; &#x627;&#x644;&#x62C;&#x62F;&#x64A;&#x62F;&#x629;: &#x627;&#x641;&#x62A;&#x62D; &#x627;&#x644;&#x628;&#x631;&#x646;&#x627;&#x645;&#x62C;&#x8C; &#x627;&#x644;&#x635;&#x642; &#x645;&#x62D;&#x62A;&#x648;&#x649; &#x627;&#x644;&#x645;&#x644;&#x641; &#x641;&#x64A; &#x62E;&#x627;&#x646;&#x629; &#x627;&#x644;&#x627;&#x633;&#x62A;&#x64A;&#x631;&#x627;&#x62F;.
+      <b>كيف تستخدم البرنامج كل سنة؟</b>
+      قبل نهاية السنة: اضغط "تصدير نسخة احتياطية" واحفظ الملف.<br>
+      بداية السنة الجديدة: افتح البرنامجŒ الصق محتوى الملف في خانة الاستيراد.
     </div>
   </div>
 </div>
@@ -1321,4 +1321,4 @@ loadFromFB(function(){
   if(bar){bar.style.display='block';bar.textContent='تم المزامنة ✓';bar.style.background='#15803d';setTimeout(function(){bar.style.display='none';},3000);}
 });
 </script>
-</body>
+</body></html>
