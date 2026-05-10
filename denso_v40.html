@@ -473,7 +473,7 @@ function showPrices(prices){
     +rows.map(function(r){
       return '<div style="font-size:13px;margin-bottom:3px">'
         +(r.p===mn?'<span style="background:var(--grn-bg);color:var(--grn);font-size:11px;padding:1px 6px;border-radius:4px;margin-left:4px">الأرخص</span>':'')
-        +esc(r.n)+': <b>'+r.p.toFixed(2)+' AED</b></div>';
+        +esc(r.n)+': <b>'+r.p.toFixed(2)+' ر.س</b></div>';
     }).join('')
     +'</div>';
 }
@@ -787,7 +787,7 @@ function openCard(id){
   // Price
   if(price){
     h+='<div class="price-big">'+price.toFixed(2)+' ر.س</div>';
-    h+='<div class="price-sub">د.إ '+aed+' &nbsp;|&nbsp; $ '+usd+'</div>';
+    h+='<div class="price-sub" style="font-size:12px">د.إ '+aed+' &nbsp;•&nbsp; $ '+usd+'</div>';
   }
   // Supplier prices
   var sp=showPrices(r.prices);
