@@ -665,7 +665,8 @@ function importSupPrices(){
         var price=parseFloat(row[1])||0;
         var partName=String(row[2]||'').trim();
         var toyotaCol=String(row[3]||'').trim();
-        if(!pn||!price)return;
+        // Skip header row
+        if(!pn||!price||isNaN(price)||pn.toLowerCase().indexOf('part')>=0||pn.toLowerCase().indexOf('denso')>=0||pn==='رقم')return;
         validRows.push({pn:pn,price:price,name:partName});
         var pnU=pn.toUpperCase().replace(/[^A-Z0-9]/g,'');
         var r=db.find(function(x){
