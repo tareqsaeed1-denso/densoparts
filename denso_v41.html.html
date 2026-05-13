@@ -1,4 +1,4 @@
-<!-- v40.2 -->
+<!-- v41 -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,7 +7,7 @@
 <title>دليل قطع الغيار دنسو</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-
+h
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#ffffff;
@@ -495,6 +495,7 @@ div class="tw">
           <thead>
             <tr>
               <th>&#x0631;&#x0642;&#x0645; &#x062F;&#x0646;&#x0633;&#x0648;</th>
+              <th style="color:#c2410c">&#x0643;&#x0648;&#x0644; &#x062C;&#x064A;&#x0631;</th>
               <th>&#x0627;&#x0644;&#x0646;&#x0648;&#x0639;</th>
               <th>&#x0627;&#x0633;&#x0645; &#x0627;&#x0644;&#x0642;&#x0637;&#x0639;&#x0629;</th>
               <th>&#x0633;&#x0639;&#x0631; &#x0627;&#x0644;&#x0645;&#x0648;&#x0631;&#x062F;</th>
@@ -1230,7 +1231,8 @@ function showReview(rows, supId){
     if(!otherPrices)otherPrices='<span style="color:var(--text3);font-size:12px">&mdash;</span>';
     
     return '<tr>'+
-      '<td style="font-family:monospace;font-size:12px">'+esc(pn)+'<button class="cp" data-cp="'+pn+'"> ⧈</button></td>'+
+      '<td style="font-family:monospace;font-size:12px">'+(function(){var _dns=r&&r.densos&&r.densos.length?r.densos:(isCG?[]:[pn]);return _dns.length?_dns.map(function(n){return esc(n)+'<button class="cp" data-cp="'+esc(n)+'">\u29C8</button>';}).join('<br>'):'<span style="color:var(--text3)">&mdash;</span>';})()+'</td>'+
+      '<td style="font-family:monospace;font-size:12px;color:#c2410c">'+(function(){var _cg=r&&r.coolgears&&r.coolgears.length?r.coolgears:(isCG?[pn]:[]);return _cg.length?_cg.map(function(n){return esc(n)+'<button class="cp" data-cp="'+esc(n)+'">\u29C8</button>';}).join('<br>'):'<span style="color:var(--text3)">&mdash;</span>';})()+'</td>'+
       '<td>'+type+'</td>'+
       '<td style="font-size:12px">'+esc(name)+'</td>'+
       '<td style="font-weight:500">'+price.toFixed(2)+' ر.س</td>'+
