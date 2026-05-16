@@ -624,7 +624,7 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
 
 
 <button class="dark-btn" id="dark-btn" onclick="toggleDark()">◑ داكن</button>
-<div id="toast" class="toast"></div>
+
 
 <script>
 var SK = 'denso_v41';
@@ -1652,10 +1652,6 @@ document.addEventListener('click',function(e){
   }
 });
 </script>
-<div id="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;padding:1rem"><div style="background:var(--bg);border-radius:var(--rl);max-width:420px;width:100%;max-height:90vh;overflow-y:auto"><div id="modal-body"></div></div></div>
-
-
-
 <script>
 // Firebase Realtime Database - works from any HTML!
 var RTDB='https://densoparts-default-rtdb.asia-southeast1.firebasedatabase.app';
@@ -1743,4 +1739,11 @@ setInterval(function(){
 }, 30000);
 </script>
 
-</div></div></body></html>
+</div></div>
+<div id="toast" class="toast"></div>
+<div id="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;padding:1rem"><div style="background:var(--bg);border-radius:var(--rl);max-width:420px;width:100%;max-height:90vh;overflow-y:auto"><div id="modal-body"></div></div></div>
+
+
+
+
+</body></html>
