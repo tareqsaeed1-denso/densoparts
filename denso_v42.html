@@ -1002,7 +1002,7 @@ function importSupPrices(){
           if(!r.prices)r.prices={};
           r.prices[supId]=price;
           if(partName&&!r.name_en)r.name_en=partName;
-          if(toyotaCol&&!(r.toyotas||r.t||[]).length){r.toyotas=[toyotaCol];r.t=[toyotaCol];}
+          if(toyotaCol){r.toyotas=[toyotaCol];r.t=[toyotaCol];}
           updated++;
         } else {
           var CG=['DI','TG','JK','XI','AA','AC','AE','MA','AB','AP'];
