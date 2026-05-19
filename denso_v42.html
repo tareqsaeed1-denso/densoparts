@@ -495,7 +495,7 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
               <th>رقم دنسو</th>
               <th style="color:#c2410c">كول جير</th>
               <th>النوع</th>
-              <th>اسم القطعة</th>
+              
               <th>سعر المورد</th>
               <th style="color:var(--org)">DJ AUTO</th>
               <th style="color:#00d4a0">Toyota OEM</th>
@@ -1194,56 +1194,136 @@ function orderFromCard(id){
 var reviewData=[];
 var reviewSupId='';
 
-function showReview(rows, supId){
-  reviewData=rows;
-  reviewSupId=supId;
-  try{localStorage.setItem('dn_review',JSON.stringify({rows:rows,supId:supId}));}catch(x){}
-  var sup=sups.find(function(s){return s.id==supId;})||{};
-  document.getElementById('review-empty').style.display='none';
-  document.getElementById('review-content').style.display='block';
-  document.getElementById('review-title').textContent='\u0645\u0644\u0641 \u0627\u0644\u0645\u0648\u0631\u062f: '+(sup.n||'');
+function showReview(rows, supId) {
+  reviewData = rows;
+  reviewSupId = supId;
+  try { localStorage.setItem('dn_review', JSON.stringify({rows: rows, supId: supId})); } catch(x) {}
   
-  var tb=document.getElementById('review-tb');
-  tb.innerHTML=rows.map(function(row,i){
-
-  var si=document.getElementById('review-search-input');if(si){si.value='';}
-  var sc=document.getElementById('review-search-count');if(sc){sc.textContent='';}    var pn=row.pn;
-    var price=row.price;
-    var r=db.find(function(x){
-      var pnU=pn.toUpperCase().replace(/[^A-Z0-9]/g,'');
-      return (x.densos||x.o||[]).some(function(d){return d.toUpperCase().replace(/[^A-Z0-9]/g,'')===pnU;})||
-             (x.coolgears||x.c||[]).some(function(d){return d.toUpperCase().replace(/[^A-Z0-9]/g,'')===pnU;});
-    });
-    var name=r?(r.name_ar||r.name_en||r.a||r.e||''):row.name||'';
-    var isCG=['DI','TG','JK','XI','AA','AC','AE','MA','AB','AP'].some(function(px){return pn.toUpperCase().startsWith(px);});
-    var type=isCG?'<span style="color:#c2410c">Cool Gear</span>':'<span style="color:var(--blue)">Denso</span>';
+  var sup = sups.find(function(s) { return s.id == supId; }) || {};
+  document.getElementById('review-title').textContent = 'ملف المورد: ' + (sup.n || '');
+  document.getElementById('review-content').style.display = 'block';
+  document.getElementById('review-empty').style.display = 'none';
+  
+  var tb = document.getElementById('review-tb');
+  var si = document.getElementById('review-search-input');
+  var q = si ? si.value.trim().toLowerCase() : '';
+  var sc = document.getElementById('review-search-count');
+  if (sc) { sc.textContent = rows.length + ' قطعة'; }
+  
+  tb.innerHTML = rows.map(function(row, i) {
+    var pn = row.pn;
+    var price = row.price;
     
-    // Other supplier prices
-    var otherPrices='';
-    if(r&&r.prices){
-      sups.forEach(function(s){
-        if(s.id!=supId&&r.prices[s.id]){
-          otherPrices+='<div style="font-size:11px">'+esc(s.n)+': '+r.prices[s.id].toFixed(2)+'</div>';
+    var pnU = pn.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    var r = db.find(function(x) {
+      return (x.densos || x.o || []).some(function(d) {
+        return d.toUpperCase().replace(/[^A-Z0-9]/g, '') === pnU;
+      }) || (x.coolgears || x.c || []).some(function(d) {
+        return d.toUpperCase().replace(/[^A-Z0-9]/g, '') === pnU;
+      });
+    });
+    
+    var isCG = ['DI','TG','JK','XI','AA','AC','AE','MA','AB','AP'].some(function(px) {
+      return pn.toUpperCase().startsWith(px);
+    });
+    var type = isCG
+      ? '<span style="color:#c2410c">Cool Gear</span>'
+      : '<span style="color:var(--blue)">Denso</span>';
+    
+    var _dns = r && r.densos && r.densos.length ? r.densos : (isCG ? [] : [pn]);
+    var densoCell = _dns.length
+      ? _dns.map(function(n) { return esc(n) + '<button class="cp" data-cp="' + esc(n) + '">⧈</button>'; }).join('<br>')
+      : '<span style="color:var(--text3)">&mdash;</span>';
+    
+    var _cg = r && r.coolgears && r.coolgears.length ? r.coolgears : (isCG ? [pn] : []);
+    var cgCell = _cg.length
+      ? _cg.map(function(n) { return esc(n) + '<button class="cp" data-cp="' + esc(n) + '">⧈</button>'; }).join('<br>')
+      : '<span style="color:var(--text3)">&mdash;</span>';
+    
+    var toyotas = r ? (r.toyotas || r.t || []) : [];
+    var toyotaCell;
+    if (toyotas.length) {
+      toyotaCell = toyotas.map(function(t) {
+        return esc(t) + '<button class="cp" data-cp="' + esc(t) + '"> ⧈</button>';
+      }).join('<br>')
+      + '<br><button onclick="editToyotaInline(' + i + ')" style="font-size:10px;padding:1px 6px;margin-top:3px;border:.5px solid var(--border2);border-radius:3px;background:var(--bg);color:var(--text3);cursor:pointer">✎ تعديل</button>';
+    } else {
+      toyotaCell = '<input type="text" id="rv-toy-' + i + '" placeholder="أدخل رقم Toyota" dir="ltr" onchange="saveToyotaFromReview(' + i + ',this.value)" style="width:120px;padding:3px 6px;font-size:11px;font-family:monospace;border:.5px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text)">';
+    }
+    
+    var _djid = 1003;
+    var _djSup = sups.find(function(s) { return s.n === 'DJ AUTO'; });
+    if (_djSup) _djid = _djSup.id;
+    var _djp = r && r.prices && r.prices[_djid] ? r.prices[_djid] : '';
+    var djInput = '<input type="number" step="0.01" min="0" data-rid="' + (r ? r.id : '') + '" data-supid="' + _djid + '" onchange="savePriceFromReview(this)" value="' + (_djp || '') + '" placeholder="--" style="width:80px;padding:3px 6px;font-size:12px;color:var(--org);font-weight:600;border:.5px solid var(--org-b);border-radius:4px;background:var(--bg);text-align:center">';
+    
+    var pricesHtml = '';
+    if (r && r.prices && Object.keys(r.prices).length > 0) {
+      var priceEntries = [];
+      sups.forEach(function(s) {
+        if (r.prices[s.id] != null) {
+          priceEntries.push({n: s.n, p: r.prices[s.id], id: s.id});
         }
       });
+      if (priceEntries.length > 0) {
+        var minP = Math.min.apply(null, priceEntries.map(function(e) { return e.p; }));
+        pricesHtml = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:4px 0">'
+          + '<span style="color:var(--text3);font-size:11px;font-weight:500;margin-left:4px">أسعار الموردين:</span>'
+          + priceEntries.map(function(entry) {
+            var isCheapest = (entry.p === minP);
+            var isCurrentSup = (entry.id == supId);
+            return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:12px;font-size:11px;'
+              + (isCheapest ? 'background:rgba(0,212,160,0.12);border:.5px solid rgba(0,212,160,0.4);color:var(--grn);font-weight:700' : 'background:var(--bg2);border:.5px solid var(--border);color:var(--text2)')
+              + '">'
+              + (isCheapest ? '✓ ' : '')
+              + esc(entry.n) + ': <b>' + entry.p.toFixed(2) + '</b> ر.س'
+              + (isCurrentSup ? ' <span style="font-size:9px;opacity:.7">(الحالي)</span>' : '')
+              + '</span>';
+          }).join('')
+          + '</div>';
+      }
+    } else if (r) {
+      pricesHtml = '<span style="color:var(--text3);font-size:11px">&mdash; لا توجد أسعار محفوظة</span>';
     }
-    if(!otherPrices)otherPrices='<span style="color:var(--text3);font-size:12px">&mdash;</span>';
     
-    return '<tr>'+
-      '<td style="font-family:monospace;font-size:12px">'+(function(){var _dns=r&&r.densos&&r.densos.length?r.densos:(isCG?[]:[pn]);return _dns.length?_dns.map(function(n){return esc(n)+'<button class="cp" data-cp="'+esc(n)+'">\u29C8</button>';}).join('<br>'):'<span style="color:var(--text3)">&mdash;</span>';})()+'</td>'+
-      '<td style="font-family:monospace;font-size:12px;color:#c2410c">'+(function(){var _cg=r&&r.coolgears&&r.coolgears.length?r.coolgears:(isCG?[pn]:[]);return _cg.length?_cg.map(function(n){return esc(n)+'<button class="cp" data-cp="'+esc(n)+'">\u29C8</button>';}).join('<br>'):'<span style="color:var(--text3)">&mdash;</span>';})()+'</td>'+
-      '<td>'+type+'</td>'+
-      '<td style="font-size:12px">'+esc(name)+'</td>'+
-      '<td style="font-weight:500">'+price.toFixed(2)+' ر.س</td>'+
-      '<td>'+(function(){var _dj=sups.find(function(s){return s.n==="DJ AUTO";});var _djid=_dj?_dj.id:0;var _djp=_dj&&r&&r.prices&&r.prices[_djid];return "<input type=\"number\" step=\"0.01\" min=\"0\" data-rid=\""+(r?r.id:'')+"\" data-supid=\""+_djid+"\" onchange=\"savePriceFromReview(this)\" value=\""+(_djp||'')+"\" placeholder=\"--\" style=\"width:80px;padding:3px 6px;font-size:12px;color:var(--org);font-weight:600;border:.5px solid var(--org-b);border-radius:4px;background:var(--bg);text-align:center\">";})()+'</td>'+
-      '<td style="font-size:11px;color:var(--grn);font-family:monospace">'+(r&&(r.toyotas||r.t||[]).length?(r.toyotas||r.t||[]).map(function(t){return t+'<button class="cp" data-cp="'+t+'"> ⧈</button>';}).join('<br>'):'<input type="text" id="rv-toy-'+i+'" placeholder="أدخل رقم Toyota" dir="ltr" onchange="saveToyotaFromReview('+i+',this.value)" style="width:120px;padding:3px 6px;font-size:11px;font-family:monospace;border:.5px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text)">')+'</td>'+
-      '<td><input type="number" id="rv-qty-'+i+'" value="1" min="1" onchange="try{localStorage.setItem(\'dn_last_row\','+i+');}catch(x){}" style="width:60px;padding:4px;font-size:13px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)"></td>'+
-      '<td><button data-idx="'+i+'" onclick="orderRow(+this.dataset.idx)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--blue-b);background:var(--blue-bg);color:var(--blue);cursor:pointer">طلب</button>'+(r?'<button data-id="'+r.id+'" onclick="editToyotaCard(+this.dataset.id)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid rgba(0,212,160,0.3);background:var(--grn-bg);color:var(--grn);cursor:pointer">Toyota</button>':'')+'</td>'+
-      '</tr>';
+    var mainRow = '<tr>'
+      + '<td style="font-family:monospace;font-size:12px">' + densoCell + '</td>'
+      + '<td style="font-family:monospace;font-size:12px;color:#c2410c">' + cgCell + '</td>'
+      + '<td>' + type + '</td>'
+      + '<td style="font-weight:500">' + price.toFixed(2) + ' ر.س</td>'
+      + '<td>' + djInput + '</td>'
+      + '<td style="font-size:11px;color:var(--grn);font-family:monospace">' + toyotaCell + '</td>'
+      + '<td><input type="number" id="rv-qty-' + i + '" value="1" min="1" onchange="try{localStorage.setItem('dn_last_row',' + i + ');}catch(x){}" style="width:55px;text-align:center;font-size:13px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)"></td>'
+      + '<td><button data-idx="' + i + '" onclick="orderRow(+this.dataset.idx)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--blue-b);background:var(--blue-bg);color:var(--blue);cursor:pointer">طلب</button>'
+      + (r ? '<button data-id="' + r.id + '" onclick="editToyotaCard(+this.dataset.id)" style="font-size:11px;padding:3px 10px;border-radius:6px;border:.5px solid rgba(0,212,160,0.3);background:var(--grn-bg);color:var(--grn);cursor:pointer">Toyota</button>' : '')
+      + '</td>'
+      + '</tr>';
+    
+    var pricesRow = pricesHtml
+      ? '<tr><td colspan="8" style="padding:0 8px 6px 8px;background:var(--bg2)">' + pricesHtml + '</td></tr>'
+      : '';
+    
+    return mainRow + pricesRow;
   }).join('');
-  // Scroll to last ordered row
-  try{var _lr=localStorage.getItem('dn_last_row');if(_lr!=null){setTimeout(function(){var _el=document.getElementById('rv-qty-'+_lr);if(_el){_el.scrollIntoView({behavior:'smooth',block:'center'});_el.style.background='rgba(245,158,11,0.15)';_el.style.outline='3px solid #f59e0b';window._lastHL=_el;}},400);}}catch(x){}
+  
+  if (q) filterReviewTable();
+  
+  try {
+    var _lr = localStorage.getItem('dn_last_row');
+    if (_lr != null) {
+      setTimeout(function() {
+        var _el = document.getElementById('rv-qty-' + _lr);
+        if (_el) {
+          _el.scrollIntoView({behavior: 'smooth', block: 'center'});
+          _el.style.background = 'rgba(245,158,11,0.15)';
+          _el.style.outline = '1.5px solid rgba(245,158,11,0.5)';
+        }
+      }, 100);
+    }
+  } catch(x) {}
 }
+
+
 
 function orderRow(i){
   try{localStorage.setItem('dn_last_row',i);}catch(x){}
@@ -1478,12 +1558,16 @@ function doSearch() {
       '<div class="rc-col"><div class="col-l" style="color:#c2410c">Cool Gear</div><div class="tags">' + cgTags + '</div></div>' +
       '<div style="color:var(--text3);font-size:14px;padding-top:18px;flex-shrink:0">&rarr;</div>' +
       '<div class="rc-col"><div class="col-l" style="color:var(--green)">Toyota OEM</div><div class="tags">' + tTags + '</div></div></div>' +
-      (meta ? '<div class="rc-meta">' + meta + '</div>' : '') + enLine + showPrices(r.prices) + (sups.length ? '<button class="ebtn" data-rid="' + r.id + '">تعديل الأسعار</button>' : '') + '<button class="ebtn" style="color:var(--grn);border-color:rgba(0,212,160,0.3);background:var(--grn-bg)" data-tid="' + r.id + '" onclick="editToyotaCard(+this.dataset.tid)">تعديل Toyota</button>' + (!(r.toyotas||r.t||[]).length ? '<button class="lbtn" data-lookup="' + r.id + '" onclick="lookupPart(+this.dataset.lookup)">ابحث عن رقم تويوتا</button>' : '') + '</div>';
+      (meta ? '<div class="rc-meta">' + meta + '</div>' : '') + enLine + showPrices(r.prices) + (sups.length ? '<button class="ebtn" data-rid="' + r.id + '">تعديل الأسعار</button>' : '') + '<div style="margin-top:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">' +'<span style="color:var(--text3);font-size:11px">تويوتا OEM: </span>' +'<input type="text" data-rid="' + r.id + '" value="' + esc((r.toyotas||r.t||[]).join(', ')) + '" placeholder="أدخل رقم Toyota" dir="ltr" onblur="saveToyotaFromId(+this.dataset.rid,this.value)" style="width:190px;padding:3px 8px;font-size:12px;font-family:monospace;border:.5px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text)">' +'</div>' + '</div>'
   }).join('');
 
   if (res.length > 60) html += '<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px">&#x639;&#x631;&#x636; 60 &#x645;&#x646; ' + res.length + ' &#x646;&#x62A;&#x64A;&#x62C;&#x629;</div>';
   el.innerHTML = html;
 }
+
+
+
+
 
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1738,6 +1822,41 @@ setInterval(function(){
     });
   }
 }, 30000);
+
+function saveToyotaFromId(id, val) {
+  var r = db.find(function(x) { return x.id === id; });
+  if (!r) return;
+  var nums = val.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+  r.toyotas = nums;
+  r.t = nums;
+  saveDB();
+  toast('تم حفظ Toyota لـ ' + (r.densos||r.coolgears||[''])[0], 'ok');
+}
+
+function editToyotaInline(idx) {
+  var row = reviewData ? reviewData[idx] : null;
+  if (!row) return;
+  var qtyInput = document.getElementById('rv-qty-' + idx);
+  if (!qtyInput) return;
+  var mainRow = qtyInput.closest('tr');
+  if (!mainRow) return;
+  var toyotaCell = mainRow.cells[5];
+  if (!toyotaCell) return;
+  var pnU = row.pn.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  var r = db.find(function(x) {
+    return (x.densos || x.o || []).some(function(d) {
+      return d.toUpperCase().replace(/[^A-Z0-9]/g, '') === pnU;
+    }) || (x.coolgears || x.c || []).some(function(d) {
+      return d.toUpperCase().replace(/[^A-Z0-9]/g, '') === pnU;
+    });
+  });
+  var currentToyotas = r ? (r.toyotas || r.t || []).join(', ') : '';
+  toyotaCell.innerHTML = '<input type="text" id="rv-toy-edit-' + idx + '" value="' + esc(currentToyotas) + '" dir="ltr" placeholder="أدخل أرقام Toyota مفصولة بفاصلة" onblur="saveToyotaFromReview(' + idx + ',this.value);showReview(reviewData,reviewSupId)" style="width:140px;padding:3px 6px;font-size:11px;font-family:monospace;border:.5px solid var(--grn);border-radius:4px;background:var(--bg);color:var(--text);outline:none">';
+  setTimeout(function() {
+    var input = document.getElementById('rv-toy-edit-' + idx);
+    if (input) { input.focus(); input.select(); }
+  }, 50);
+}
 </script>
 
 </div></div>
