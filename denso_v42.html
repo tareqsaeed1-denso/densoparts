@@ -429,6 +429,7 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
               <th>الاسم</th>
               <th>الفئة</th>
               <th></th>
+              <th style="color:#6366f1;font-weight:700;min-width:160px;text-align:right">أسعار الموردين</th>
             </tr>
           </thead>
           <tbody id="m-tb"></tbody>
@@ -1194,6 +1195,61 @@ function orderFromCard(id){
 var reviewData=[];
 var reviewSupId='';
 
+
+// ========== SUPPLIER CELL BUILDER ==========
+var _SUP_COLORS=[{bg:'#dbeafe',brd:'#3b82f6',txt:'#1e40af'},{bg:'#dcfce7',brd:'#16a34a',txt:'#14532d'},{bg:'#fef9c3',brd:'#ca8a04',txt:'#78350f'},{bg:'#fce7f3',brd:'#db2777',txt:'#831843'},{bg:'#ede9fe',brd:'#7c3aed',txt:'#4c1d95'},{bg:'#fff7ed',brd:'#ea580c',txt:'#7c2d12'},{bg:'#ecfdf5',brd:'#059669',txt:'#064e3b'},{bg:'#fdf4ff',brd:'#c026d3',txt:'#701a75'},{bg:'#f0fdf4',brd:'#15803d',txt:'#14532d'},{bg:'#f0f9ff',brd:'#0284c7',txt:'#0c4a6e'}];
+var _SUP_NAMED={'DJ AUTO':0,'BASP AUTOT':1,'عالم':2,'WORLD TOP':3};
+var _supColorIdx=4,_supColorMap={};
+function _getSupColor(n){if(_SUP_NAMED.hasOwnProperty(n))return _SUP_COLORS[_SUP_NAMED[n]];if(!_supColorMap[n]){_supColorMap[n]=_SUP_COLORS[_supColorIdx%_SUP_COLORS.length];_supColorIdx++;}return _supColorMap[n];}
+function _buildSupCell(pricesHtml){
+  if(!pricesHtml)return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"></td>';
+  var tmp=document.createElement('div');tmp.innerHTML=pricesHtml;
+  var spans=tmp.querySelectorAll('span'),entries=[];
+  for(var i=0;i<spans.length;i++){
+    var txt=spans[i].textContent.trim();
+    if(!txt||txt==='الحالي'||txt.includes('أسعار'))continue;
+    var m=txt.match(/^(✓)?s*([^:：]+)[：:]s*(.+)/);
+    if(!m)continue;
+    var price=parseFloat(m[3].replace(/[^d.]/g,''))||0;
+    entries.push({name:m[2].trim(),price:price,priceText:m[3].replace('الحالي','').trim(),active:m[1]==='✓'});
+  }
+  if(!entries.length)return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"></td>';
+  entries.sort(function(a,b){return a.price-b.price;});
+  var pills=entries.map(function(s){var c=_getSupColor(s.name);return'<div style="display:flex;align-items:center;justify-content:space-between;padding:2px 7px;border-radius:5px;background:'+c.bg+';border:'+(s.active?'2px':'1px')+' solid '+c.brd+';color:'+c.txt+';font-size:11px;font-weight:'+(s.active?'700':'600')+';white-space:nowrap;direction:rtl;min-width:150px;margin-bottom:2px"><span style="flex:1;text-align:right">'+(s.active?'✓ ':'')+s.name+'</span><span style="margin-right:8px;font-weight:700">'+s.priceText+'</span></div>';}).join('');
+  return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"><div style="display:flex;flex-direction:column;">'+pills+'</div></td>';
+}
+function editDensoInline(idx){
+  var inp=document.getElementById('rv-qty-'+idx);if(!inp)return;
+  var tr=inp.closest('tr');if(!tr)return;
+  var td=tr.querySelectorAll('td')[0],row=reviewData[idx];if(!row||!td)return;
+  var r=db.find(function(x){return(x.densos||[]).some(function(d){return d.replace(/[^A-Z0-9]/gi,'').toUpperCase()===row.pn.replace(/[^A-Z0-9]/gi,'').toUpperCase();});});
+  var val=r?(r.densos||[]).join(', '):row.pn;
+  td.innerHTML='<input type="text" value="'+esc(val)+'" dir="ltr" placeholder="أدخل أرقام Denso مفصولة بفاصلة" onblur="saveDensoFromReview('+idx+',this.value)" style="width:130px;padding:3px 6px;font-size:11px;font-family:monospace;border:.5px solid var(--grn);border-radius:4px;background:var(--bg);color:var(--text);outline:none">';
+  var i=td.querySelector('input');if(i){i.focus();i.select();}
+}
+function saveDensoFromReview(idx,val){
+  if(!val.trim())return;
+  var row=reviewData[idx];if(!row)return;
+  var nums=val.split(',').map(function(s){return s.trim();}).filter(Boolean);if(!nums.length)return;
+  var r=db.find(function(x){return(x.densos||[]).some(function(d){return d.replace(/[^A-Z0-9]/gi,'').toUpperCase()===row.pn.replace(/[^A-Z0-9]/gi,'').toUpperCase();});});
+  if(!r)return;r.densos=nums;saveDB();showReview(reviewData,reviewSupId);
+}
+function editCoolGearInline(idx){
+  var inp=document.getElementById('rv-qty-'+idx);if(!inp)return;
+  var tr=inp.closest('tr');if(!tr)return;
+  var td=tr.querySelectorAll('td')[1],row=reviewData[idx];if(!row||!td)return;
+  var r=db.find(function(x){return(x.densos||[]).some(function(d){return d.replace(/[^A-Z0-9]/gi,'').toUpperCase()===row.pn.replace(/[^A-Z0-9]/gi,'').toUpperCase();});});
+  var val=r?(r.coolgears||[]).join(', '):'';
+  td.innerHTML='<input type="text" value="'+esc(val)+'" dir="ltr" placeholder="أدخل أرقام Cool Gear مفصولة بفاصلة" onblur="saveCoolGearFromReview('+idx+',this.value)" style="width:120px;padding:3px 6px;font-size:11px;font-family:monospace;border:.5px solid var(--grn);border-radius:4px;background:var(--bg);color:var(--text);outline:none">';
+  var i=td.querySelector('input');if(i){i.focus();i.select();}
+}
+function saveCoolGearFromReview(idx,val){
+  var row=reviewData[idx];if(!row)return;
+  var nums=val.split(',').map(function(s){return s.trim();}).filter(Boolean);
+  var r=db.find(function(x){return(x.densos||[]).some(function(d){return d.replace(/[^A-Z0-9]/gi,'').toUpperCase()===row.pn.replace(/[^A-Z0-9]/gi,'').toUpperCase();});});
+  if(!r)return;r.coolgears=nums;saveDB();showReview(reviewData,reviewSupId);
+}
+
 function showReview(rows, supId) {
   reviewData = rows;
   reviewSupId = supId;
@@ -1234,11 +1290,13 @@ function showReview(rows, supId) {
     var densoCell = _dns.length
       ? _dns.map(function(n) { return esc(n) + '<button class="cp" data-cp="' + esc(n) + '">⧈</button>'; }).join('<br>')
       : '<span style="color:var(--text3)">&mdash;</span>';
+    densoCell += '<br><button onclick="editDensoInline(' + i + ')" style="font-size:10px;padding:1px 5px;margin-top:3px;border:.5px solid var(--border2);border-radius:3px;background:var(--bg);color:var(--text3);cursor:pointer;display:block">✎ تعديل</button>';
     
     var _cg = r && r.coolgears && r.coolgears.length ? r.coolgears : (isCG ? [pn] : []);
     var cgCell = _cg.length
       ? _cg.map(function(n) { return esc(n) + '<button class="cp" data-cp="' + esc(n) + '">⧈</button>'; }).join('<br>')
       : '<span style="color:var(--text3)">&mdash;</span>';
+    cgCell += '<br><button onclick="editCoolGearInline(' + i + ')" style="font-size:10px;padding:1px 5px;margin-top:3px;border:.5px solid var(--border2);border-radius:3px;background:var(--bg);color:var(--text3);cursor:pointer;display:block">✎ تعديل</button>';
     
     var toyotas = r ? (r.toyotas || r.t || []) : [];
     var toyotaCell;
@@ -1297,11 +1355,10 @@ function showReview(rows, supId) {
       + '<td><button data-idx="' + i + '" onclick="orderRow(+this.dataset.idx)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--blue-b);background:var(--blue-bg);color:var(--blue);cursor:pointer">طلب</button>'
       + (r ? '<button data-id="' + r.id + '" onclick="editToyotaCard(+this.dataset.id)" style="font-size:11px;padding:3px 10px;border-radius:6px;border:.5px solid rgba(0,212,160,0.3);background:var(--grn-bg);color:var(--grn);cursor:pointer">Toyota</button>' : '')
       + '</td>'
+      + _buildSupCell(pricesHtml)
       + '</tr>';
     
-    var pricesRow = pricesHtml
-      ? '<tr><td colspan="8" style="padding:0 8px 6px 8px;background:var(--bg2)">' + pricesHtml + '</td></tr>'
-      : '';
+    var pricesRow = '';
     
     return mainRow + pricesRow;
   }).join('');
