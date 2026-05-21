@@ -1207,15 +1207,18 @@ function _buildSupCell(pricesHtml){
   var spans=tmp.querySelectorAll('span'),entries=[];
   for(var i=0;i<spans.length;i++){
     var txt=spans[i].textContent.trim();
-    if(!txt||txt==='الحالي'||txt.includes('أسعار'))continue;
-    var m=txt.match(/^(✓)?s*([^:：]+)[：:]s*(.+)/);
+    if(!txt||txt.includes('أسعار'))continue;
+    var cleaned=txt.replace(/\(\s*الحالي\s*\)/g,'').replace(/الحالي/g,'').trim();
+    if(!cleaned||/^[()\s]+$/.test(cleaned))continue;
+    var m=cleaned.match(/^(\u2713)?\s*([^:\uFF1A]+)[\uFF1A:]\s*(.+)/);
     if(!m)continue;
-    var price=parseFloat(m[3].replace(/[^d.]/g,''))||0;
-    entries.push({name:m[2].trim(),price:price,priceText:m[3].replace('الحالي','').trim(),active:m[1]==='✓'});
+    var price=parseFloat(m[3].replace(/[^\d.]/g,''))||0;
+    var priceText=m[3].replace(/\s*\(\s*\)\s*/g,'').trim();
+    entries.push({name:m[2].trim(),price:price,priceText:priceText,active:m[1]==='\u2713'});
   }
   if(!entries.length)return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"></td>';
   entries.sort(function(a,b){return a.price-b.price;});
-  var pills=entries.map(function(s){var c=_getSupColor(s.name);return'<div style="display:flex;align-items:center;justify-content:space-between;padding:2px 7px;border-radius:5px;background:'+c.bg+';border:'+(s.active?'2px':'1px')+' solid '+c.brd+';color:'+c.txt+';font-size:11px;font-weight:'+(s.active?'700':'600')+';white-space:nowrap;direction:rtl;min-width:150px;margin-bottom:2px"><span style="flex:1;text-align:right">'+(s.active?'✓ ':'')+s.name+'</span><span style="margin-right:8px;font-weight:700">'+s.priceText+'</span></div>';}).join('');
+  var pills=entries.map(function(s){var c=_getSupColor(s.name);return'<div style="display:flex;align-items:center;justify-content:space-between;padding:2px 7px;border-radius:5px;background:'+c.bg+';border:'+(s.active?'2px':'1px')+' solid '+c.brd+';color:'+c.txt+';font-size:11px;font-weight:'+(s.active?'700':'600')+';white-space:nowrap;direction:rtl;min-width:150px;margin-bottom:2px"><span style="flex:1;text-align:right">'+(s.active?'\u2713 ':''+s.name+'</span><span style="margin-right:8px;font-weight:700">'+s.priceText+'</span></div>';}).join('');
   return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"><div style="display:flex;flex-direction:column;">'+pills+'</div></td>';
 }
 function editDensoInline(idx){
