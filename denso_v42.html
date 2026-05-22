@@ -1201,25 +1201,32 @@ var _SUP_COLORS=[{bg:'#dbeafe',brd:'#3b82f6',txt:'#1e40af'},{bg:'#dcfce7',brd:'#
 var _SUP_NAMED={'DJ AUTO':0,'BASP AUTOT':1,'عالم':2,'WORLD TOP':3};
 var _supColorIdx=4,_supColorMap={};
 function _getSupColor(n){if(_SUP_NAMED.hasOwnProperty(n))return _SUP_COLORS[_SUP_NAMED[n]];if(!_supColorMap[n]){_supColorMap[n]=_SUP_COLORS[_supColorIdx%_SUP_COLORS.length];_supColorIdx++;}return _supColorMap[n];}
-function _buildSupCell(pricesHtml){
-  if(!pricesHtml)return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"></td>';
-  var tmp=document.createElement('div');tmp.innerHTML=pricesHtml;
-  var spans=tmp.querySelectorAll('span'),entries=[];
-  for(var i=0;i<spans.length;i++){
-    var txt=spans[i].textContent.trim();
-    if(!txt||txt.includes('أسعار'))continue;
-    var cleaned=txt.replace(/\(\s*الحالي\s*\)/g,'').replace(/الحالي/g,'').trim();
-    if(!cleaned||/^[()\s]+$/.test(cleaned))continue;
-    var m=cleaned.match(/^(\u2713)?\s*([^:\uFF1A]+)[\uFF1A:]\s*(.+)/);
+function _buildSupCell(html){
+  if(!html)return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"></td>';
+  var t=document.createElement('div');t.innerHTML=html;
+  var sps=t.querySelectorAll('span'),entries=[];
+  for(var i=0;i<sps.length;i++){
+    var txt=sps[i].textContent.trim();
+    if(!txt)continue;
+    if(txt.indexOf('أسعار')>=0)continue;
+    var c2=txt.replace(/\(\s*الحالي\s*\)/g,'').replace(/الحالي/g,'').trim();
+    if(!c2||/^[()s]+$/.test(c2))continue;
+    var m=c2.match(/^(✓)?\s*([^:\uFF1A]+)[\uFF1A:]\s*(.+)/);
     if(!m)continue;
-    var price=parseFloat(m[3].replace(/[^\d.]/g,''))||0;
-    var priceText=m[3].replace(/\s*\(\s*\)\s*/g,'').trim();
-    entries.push({name:m[2].trim(),price:price,priceText:priceText,active:m[1]==='\u2713'});
+    var pr=parseFloat(m[3].replace(/[^\d.]/g,''))||0;
+    var pt=m[3].replace(/\s*\(\s*\)\s*/g,'').trim();
+    entries.push({name:m[2].trim(),price:pr,priceText:pt,active:m[1]==='✓'});
   }
   if(!entries.length)return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"></td>';
   entries.sort(function(a,b){return a.price-b.price;});
-  var pills=entries.map(function(s){var c=_getSupColor(s.name);return'<div style="display:flex;align-items:center;justify-content:space-between;padding:2px 7px;border-radius:5px;background:'+c.bg+';border:'+(s.active?'2px':'1px')+' solid '+c.brd+';color:'+c.txt+';font-size:11px;font-weight:'+(s.active?'700':'600')+';white-space:nowrap;direction:rtl;min-width:150px;margin-bottom:2px"><span style="flex:1;text-align:right">'+(s.active?'\u2713 ':''+s.name+'</span><span style="margin-right:8px;font-weight:700">'+s.priceText+'</span></div>';}).join('');
-  return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"><div style="display:flex;flex-direction:column;">'+pills+'</div></td>';
+  var html2='';
+  for(var j=0;j<entries.length;j++){
+    var s=entries[j];var clr=_getSupColor(s.name);
+    html2+='<div style="display:flex;align-items:center;justify-content:space-between;padding:2px 7px;border-radius:5px;background:'+clr.bg+';border:'+(s.active?'2px':'1px')+' solid '+clr.brd+';color:'+clr.txt+';font-size:11px;font-weight:'+(s.active?'700':'600')+';white-space:nowrap;direction:rtl;min-width:150px;margin-bottom:2px">';
+    html2+='<span style="flex:1;text-align:right">'+(s.active?'✓ ':'')+s.name+'</span>';
+    html2+='<span style="margin-right:8px;font-weight:700">'+s.priceText+'</span></div>';
+  }
+  return'<td style="vertical-align:top;padding:4px 6px;min-width:160px"><div style="display:flex;flex-direction:column;">'+html2+'</div></td>';
 }
 function editDensoInline(idx){
   var inp=document.getElementById('rv-qty-'+idx);if(!inp)return;
