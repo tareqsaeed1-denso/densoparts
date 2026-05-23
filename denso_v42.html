@@ -141,21 +141,23 @@ body.light{
 }
 .fb select:focus{outline:none;border-color:var(--red)}
 
-.rc{
-  background:var(--bg2);border:.5px solid var(--border);
-  border-left:3px solid transparent;
-  border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:6px;
-  transition:all .2s;cursor:pointer;
-}
-.rc:hover{border-left-color:var(--red);background:var(--bg4);transform:translateX(-2px)}
-.rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-.rc-name{font-size:13px;font-weight:600;flex:1}
-.rc-cat{
-  font-size:10px;padding:2px 8px;border-radius:2px;
-  background:var(--red-bg);color:var(--red);
-  border:.5px solid var(--red-b);white-space:nowrap;font-weight:700;
-  font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;text-transform:uppercase;
-}
+/* ── Card New Design ── */
+.rc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .2s;cursor:pointer}
+.rc:hover{box-shadow:0 6px 20px rgba(230,0,18,0.12);border-color:var(--red-b);transform:translateY(-1px)}
+.rc-top{background:linear-gradient(135deg,#cc0010 0%,#e60012 60%,#ff1a2b 100%);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.rc-name{font-size:15px;font-weight:800;color:#fff;flex:1;letter-spacing:.2px}
+.rc-name-en{font-size:10px;color:rgba(255,255,255,.7);letter-spacing:.5px;margin-top:1px}
+.rc-cat{font-size:10px;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);white-space:nowrap;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.rc-body{padding:12px 14px;display:flex;gap:12px;align-items:stretch}
+.rc-img-box{width:90px;min-height:80px;flex-shrink:0;border-radius:8px;border:2px dashed var(--border);background:var(--bg4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:all .2s;font-size:20px;color:var(--text3);position:relative;overflow:hidden}
+.rc-img-box:hover{border-color:var(--red);background:var(--red-bg)}
+.rc-img-box img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+.rc-img-lbl{font-size:9px;color:var(--text3);font-weight:600;text-align:center;line-height:1.3}
+.rc-nums{flex:1;display:grid;grid-template-columns:1fr 16px 1fr 16px 1fr;align-items:center;background:var(--bg4);border-radius:8px;border:1px solid var(--border);overflow:hidden}
+.rc-col2{padding:10px 8px;text-align:center}
+.rc-col2-mid{border-right:1px solid var(--border);border-left:1px solid var(--border)}
+.rc-col-arrow{color:var(--text3);font-size:16px;text-align:center;padding:0 2px}
+.rc-cat-lbl{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
 .pgrid{display:grid;grid-template-columns:1fr 20px 1fr 20px 1fr;gap:10px;align-items:start}
 @media(max-width:580px){.pgrid{grid-template-columns:1fr}.parrow{display:none}}
 .plbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
@@ -173,7 +175,7 @@ body.light{
 .tag.t{background:var(--grn-bg);color:var(--grn);border-color:rgba(0,200,83,0.3)}
 .nd{color:var(--text3);font-size:11px}
 
-.rc-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:.5px solid var(--border);font-size:12px}
+.rc-meta{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 10px;font-size:12px;align-items:center;justify-content:space-between}
 .price{color:var(--grn);font-weight:700;font-size:13px;font-family:'IBM Plex Mono',monospace}
 .qty-lbl{color:var(--text2)}.name-en{color:var(--text3)}
 
@@ -1510,6 +1512,28 @@ function savePriceFromReview(el){
   }
 }
 
+function uploadImgForCard(id, e) {
+  var inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.onchange = function() {
+    var file = inp.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var r = db.find(function(x) { return x.id === id; });
+      if (r) {
+        r.img = ev.target.result;
+        saveDB();
+        doSearch();
+        toast('تم حفظ الصورة', 'ok');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+}
+
 function loadDB() {
   try{var _rv=localStorage.getItem('dn_review');if(_rv){var _rvd=JSON.parse(_rv);setTimeout(function(){if(_rvd.rows&&_rvd.rows.length)showReview(_rvd.rows,_rvd.supId);},500);}}catch(x){}
   try{if(localStorage.getItem('dn_dark')==='1'){document.body.classList.add('dark');var b=document.getElementById('dark-btn');if(b)b.textContent='◑ فاتح';}}catch(x){}
@@ -1619,13 +1643,28 @@ function doSearch() {
     if (r.price) meta += '<span class="rc-price">' + r.price.toFixed(2) + ' AED</span>';
     if (r.qty) meta += '<span class="rc-qty">&#x645;&#x62E;&#x632;&#x648;&#x646;: ' + r.qty + '</span>';
     var enLine = (r.name_en && r.name_en !== r.name_ar) ? '<div class="rc-en">' + esc(r.name_en) + '</div>' : '';
-    return '<div class="rc" data-id="'+r.id+'" onclick="openCard(+this.dataset.id)"><div class="rc-top"><div class="rc-name">' + name + '</div>' + catBadge + '</div>' +
-      '<div class="rc-row"><div class="rc-col"><div class="col-l" style="color:var(--blue)">Denso Original</div><div class="tags">' + dTags + '</div></div>' +
-      '<div style="color:var(--text3);font-size:14px;padding-top:18px;flex-shrink:0">&rarr;</div>' +
-      '<div class="rc-col"><div class="col-l" style="color:#c2410c">Cool Gear</div><div class="tags">' + cgTags + '</div></div>' +
-      '<div style="color:var(--text3);font-size:14px;padding-top:18px;flex-shrink:0">&rarr;</div>' +
-      '<div class="rc-col"><div class="col-l" style="color:var(--green)">Toyota OEM</div><div class="tags">' + tTags + '</div></div></div>' +
-      (meta ? '<div class="rc-meta">' + meta + '</div>' : '') + enLine + showPrices(r.prices) + (sups.length ? '<button class="ebtn" data-rid="' + r.id + '">تعديل الأسعار</button>' : '') + '<div style="margin-top:5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">' +'<span style="color:var(--text3);font-size:11px">تويوتا OEM: </span>' +'<input type="text" data-rid="' + r.id + '" value="' + esc((r.toyotas||r.t||[]).join(', ')) + '" placeholder="أدخل رقم Toyota" dir="ltr" onblur="saveToyotaFromId(+this.dataset.rid,this.value)" style="width:190px;padding:3px 8px;font-size:12px;font-family:monospace;border:.5px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text)">' +'</div>' + '</div>'
+    var imgBox = '<div class="rc-img-box" onclick="event.stopPropagation();uploadImgForCard('+r.id+',event)" title="اضغط لإضافة صورة">'+(r.img?'<img src="'+r.img+'" alt="صورة القطعة">':'<div>📷</div><div class="rc-img-lbl">صورة<br>المنتج</div>')+'</div>';
+    var nameEn = r.name_en ? '<div class="rc-name-en">'+esc(r.name_en)+'</div>' : '';
+    return '<div class="rc" data-id="'+r.id+'" onclick="openCard(+this.dataset.id)">' +
+      '<div class="rc-top"><div><div class="rc-name">'+name+'</div>'+nameEn+'</div>'+catBadge+'</div>' +
+      '<div class="rc-body">' +
+        imgBox +
+        '<div class="rc-nums">' +
+          '<div class="rc-col2"><div class="rc-cat-lbl" style="color:#e60012">Denso Original</div><div class="tags">'+dTags+'</div></div>' +
+          '<div class="rc-col-arrow">›</div>' +
+          '<div class="rc-col2 rc-col2-mid"><div class="rc-cat-lbl" style="color:#c2410c">Cool Gear</div><div class="tags">'+cgTags+'</div></div>' +
+          '<div class="rc-col-arrow">›</div>' +
+          '<div class="rc-col2"><div class="rc-cat-lbl" style="color:#0d3880">Toyota OEM</div><div class="tags">'+tTags+'</div></div>' +
+        '</div>' +
+      '</div>' +
+      (meta||enLine ? '<div class="rc-meta">'+meta+enLine+'</div>' : '') +
+      showPrices(r.prices) +
+      (sups.length ? '<div style="padding:0 14px 10px"><button class="ebtn" data-rid="'+r.id+'">✏️ تعديل الأسعار</button></div>' : '') +
+      '<div style="padding:0 14px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+
+        '<span style="color:var(--text3);font-size:11px">تويوتا OEM: </span>'+
+        '<input type="text" data-rid="'+r.id+'" value="'+esc((r.toyotas||r.t||[]).join(', '))+'" placeholder="أدخل رقم Toyota" dir="ltr" onblur="saveToyotaFromId(+this.dataset.rid,this.value)" onclick="event.stopPropagation()" style="width:190px;padding:3px 8px;font-size:12px;font-family:monospace;border:.5px solid var(--border2);border-radius:4px;background:var(--bg);color:var(--text)">'+
+      '</div>'+
+    '</div>'
   }).join('');
 
   if (res.length > 60) html += '<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px">&#x639;&#x631;&#x636; 60 &#x645;&#x646; ' + res.length + ' &#x646;&#x62A;&#x64A;&#x62C;&#x629;</div>';
