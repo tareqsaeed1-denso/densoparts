@@ -726,7 +726,7 @@ function showPrices(prices){
 }
 
 
-function closeModal(){
+function searchDenso(q){window.open('https://www.google.com/search?q='+encodeURIComponent('denso '+q+' part number'),'_blank');}{
   document.getElementById('modal').style.display='none';
 }
 
@@ -752,6 +752,7 @@ function editPrices(id){
   html+='إلغاء</button>';
   html+='</div><div style="margin-top:8px"><button data-id="'+id+'" onclick="editToyotaCard(+this.dataset.id)" style="width:100%;padding:7px;font-size:12px;border-radius:var(--r);cursor:pointer;border:.5px solid rgba(0,212,160,0.3);background:var(--grn-bg);color:var(--grn)">تعديل رقم Toyota OEM</button>'+
   '<button onclick="editDensoNums('+id+')" style="width:100%;padding:7px;font-size:12px;border-radius:var(--r);cursor:pointer;border:.5px solid var(--red-b);background:var(--red-bg);color:var(--red);margin-top:6px">تعديل رقم Denso Original</button>'+
+      '<button onclick="openDensoSearchPanel('+id+')" style="width:100%;padding:7px;font-size:12px;border-radius:var(--r);cursor:pointer;border:.5px solid rgba(0,100,200,0.4);background:#e8f0fe;color:#0055cc;margin-top:6px;font-weight:600">&#128269; بحث عن رقم دنسو جديد</button>'+
   '<button onclick="editCoolGearNums('+id+')" style="width:100%;padding:7px;font-size:12px;border-radius:var(--r);cursor:pointer;border:.5px solid var(--org-b);background:var(--org-bg);color:var(--org);margin-top:6px">تعديل رقم Cool Gear</button>'+
   '</div></div></div>';
   document.getElementById('modal-body').innerHTML=html;
