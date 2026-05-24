@@ -503,6 +503,7 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
               <th>النوع</th>
               
               <th>سعر المورد</th>
+              <th>اسم القطعة</th>
               <th style="color:#00d4a0">Toyota OEM</th>
               <th>الكمية</th>
               <th></th>
@@ -1283,6 +1284,7 @@ function showReview(rows, supId) {
   tb.innerHTML = rows.map(function(row, i) {
     var pn = row.pn;
     var price = row.price;
+    var partName = row.name || '';
     
     var pnU = pn.toUpperCase().replace(/[^A-Z0-9]/g, '');
     var r = db.find(function(x) {
@@ -1362,7 +1364,8 @@ function showReview(rows, supId) {
       + '<td style="font-family:monospace;font-size:12px;color:#c2410c">' + cgCell + '</td>'
       + '<td>' + type + '</td>'
       + '<td style="font-weight:500">' + price.toFixed(2) + ' ر.س</td>'
-           + '<td style="font-size:11px;color:var(--grn);font-family:monospace">' + toyotaCell + '</td>'
+           + '<td>' + partName + '</td>'
+      + '<td style="font-size:11px;color:var(--grn);font-family:monospace">' + toyotaCell + '</td>'
       + '<td><input type="number" id="rv-qty-' + i + '" value="1" min="1" onchange="try{localStorage.setItem(\'dn_last_row\',' + i + ');}catch(x){}" style="width:55px;text-align:center;font-size:13px;border:.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text)"></td>'
       + '<td><button data-idx="' + i + '" onclick="orderRow(+this.dataset.idx)" style="font-size:12px;padding:3px 10px;border-radius:6px;border:.5px solid var(--blue-b);background:var(--blue-bg);color:var(--blue);cursor:pointer">طلب</button>'
       + (r ? '' : '')
