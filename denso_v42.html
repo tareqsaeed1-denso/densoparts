@@ -793,7 +793,7 @@ function editPrices(id){
   document.getElementById('modal').style.display='flex';
 }
 
-function editToyotaFromTable(id){
+function closeModal(){document.getElementById('modal').style.display='none';}function editToyotaFromTable(id){
   var r=db.find(function(x){return x.id===id;});
   if(!r)return;
   var toys=(r.toyotas||r.t||[]).join(', ');
