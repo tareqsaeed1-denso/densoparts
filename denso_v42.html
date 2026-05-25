@@ -6,7 +6,7 @@ h<!DOCTYPE html>
 <title>دليل قطع الغيار دنسو</title>
 <style>h
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0}input,td,th{font-family:Arial,sans-serif!important;font-feature-settings:"lnum" 1}
 :root{
   --bg:#ffffff;hhh
   --bg2:#f8f8f8;
@@ -726,7 +726,7 @@ function showPrices(prices){
 }
 
 
-function searchDenso(q){window.open('https://www.google.com/search?q='+encodeURIComponent('denso '+q+' part number'),'_blank');}{
+function searchDenso(q){window.open('https://www.google.com/search?q='+encodeURIComponent('denso "'+q+'" OEM cross reference'),'_blank');
   document.getElementById('modal').style.display='none';
 }
 
@@ -734,14 +734,14 @@ function openDensoSearchPanel(id){
   var r=db.find(function(x){return x.id===id;});
   if(!r)return;
   var tnums=r.t||[];
-  var html='<div style="padding:16px"><h3 style="margin:0 0 10px">Denso Search</h3>';
+  var html='<div dir="ltr" style="font-family:Arial,sans-serif"><div style="padding:12px 16px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center"><b style="font-size:14px">&#128269; Denso Search</b><button onclick="document.getElementById(\'densoPanel\').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888;padding:0 4px;line-height:1">&times;</button></div><div style="padding:14px 16px">';
     if(tnums.length){html+='<p style="margin:0 0 8px;font-size:13px">Toyota nums (click to search):</p>';
     tnums.forEach(function(n){html+='<button onclick="searchDenso(\'' +n+'\')" style="margin:3px;padding:6px 12px;background:#1a73e8;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">'+n+'</button>';});}
     html+='<div style="margin-top:12px"><input id="newDensoInput" type="text" placeholder="Enter Denso number" style="width:200px;padding:6px;border:1px solid #ccc;border-radius:4px"> <button onclick="addDensoNum('+id+')" style="padding:6px 12px;background:#2e7d32;color:#fff;border:none;border-radius:4px;cursor:pointer">Add</button></div>';
-    html+='</div>';
+    html+='</div></div>';
     var ov=document.createElement('div');
     ov.id='densoPanel';
-    ov.style='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:9999;min-width:340px;max-width:90vw';
+    ov.style='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,0.3);z-index:9999;min-width:340px;max-width:92vw;overflow:hidden';
     ov.innerHTML=html;
     var old=document.getElementById('densoPanel');
     if(old)old.remove();
