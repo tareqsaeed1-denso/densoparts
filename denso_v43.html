@@ -2004,7 +2004,7 @@ if(e)document.getElementById('li-email').value=e;
 if(p)document.getElementById('li-pass').value=p;
 document.getElementById('remember-me').checked=true;}}
 
-function doLogin(){
+function doLogout(){if(confirm('خروج من التطبيق؟')){localStorage.removeItem('saved_pass');localStorage.removeItem('remember_me');location.reload();}} function doLogin(){
 if(document.getElementById('remember-me').checked){localStorage.setItem('saved_email',document.getElementById('li-email').value);localStorage.setItem('saved_pass',document.getElementById('li-pass').value);localStorage.setItem('remember_me','1');}
 
   var email=document.getElementById("li-email").value.trim();
@@ -2120,4 +2120,4 @@ function editToyotaInline(idx) {
 
 
 
-</body></html>
+<script> document.querySelector(".hdr").insertAdjacentHTML( "afterbegin", "<button onclick='doLogout()' style='background:#c0392b;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;margin-right:12px;font-family:inherit;'>&#x23FB; &#x62e;&#x631;&#x648;&#x62c;</button>" ); </script>  </body></html>
