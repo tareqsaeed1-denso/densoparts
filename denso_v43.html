@@ -356,7 +356,7 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
 <div class="login-title">دليل قطع الغيار دنسو</div>
 <div class="login-sub">سجّل دخول للمتابعة</div>
 <input class="login-inp" id="li-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email">
-<input class="login-inp" id="li-pass" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+<div style="position:relative;width:100%;margin-bottom:10px;"><input class="login-inp" id="li-pass" type="password" placeholder="كلمة المرور" autocomplete="current-password" style="margin-bottom:0;padding-left:38px;"><button type="button" id="toggle-pass" onclick="var i=document.getElementById('li-pass');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈';" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:0;line-height:1;color:#999;">👁</button></div>
 <div style="display:flex;align-items:center;gap:8px;margin:10px 0 6px;direction:rtl;"><input type="checkbox" id="remember-me" style="width:18px;height:18px;cursor:pointer;accent-color:#e60012;" onchange="toggleRemember(this)"><label for="remember-me" style="font-size:14px;cursor:pointer;color:#333;">تذكرني</label></div>
 <button class="login-btn" onclick="doLogin()">دخول</button>
 <div class="login-err" id="li-err"></div>
@@ -2004,7 +2004,7 @@ if(e)document.getElementById('li-email').value=e;
 if(p)document.getElementById('li-pass').value=p;
 document.getElementById('remember-me').checked=true;}}
 
-function doLogout(){if(confirm('خروج من التطبيق؟')){localStorage.removeItem('saved_pass');localStorage.removeItem('remember_me');location.reload();}} function doLogin(){
+function doLogout(){if(confirm('خروج من التطبيق؟')){localStorage.removeItem('saved_pass');localStorage.removeItem('remember_me');sessionStorage.removeItem('dn_token');sessionStorage.removeItem('dn_email');location.reload();}} function doLogin(){
 if(document.getElementById('remember-me').checked){localStorage.setItem('saved_email',document.getElementById('li-email').value);localStorage.setItem('saved_pass',document.getElementById('li-pass').value);localStorage.setItem('remember_me','1');}
 
   var email=document.getElementById("li-email").value.trim();
