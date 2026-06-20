@@ -415,7 +415,15 @@ body.dark img,body.dark video{filter:invert(1) hue-rotate(180deg)}
     <div class="card">
       <div class="slbl">تفاصيل القطعة</div>
       <div class="fr" style="margin-bottom:8px">
-        <input type="text" id="n-ar" placeholder="الاسم بالعربي" dir="rtl" class="ni" style="flex:1">
+        <div class="sec" style="border:1px dashed #c00;border-radius:10px;padding:10px;margin:10px 0">
+        <div class="sec-title" style="color:#c00">أرقام العام القادم (طلب مسبق)</div>
+        <div style="display:flex;gap:8px;flex-wrap:nowrap">
+          <input type="text" id="fut-d" placeholder="رقم Denso مستقبلي" style="flex:1">
+          <input type="text" id="fut-cg" placeholder="رقم Cool Gear مستقبلي" style="flex:1">
+          <input type="text" id="fut-t" placeholder="رقم Toyota مستقبلي" style="flex:1">
+        </div>
+      </div>
+      <input type="text" id="n-ar" placeholder="الاسم بالعربي" dir="rtl" class="ni" style="flex:1">
       </div>
       <div class="fr" style="margin-bottom:8px">
         <input type="text" id="n-en" placeholder="English name (optional)" dir="ltr" class="ni" style="flex:1">
@@ -1703,9 +1711,10 @@ function doSearch() {
     var inD = (r.densos||[]).some(function(d) { return d.toUpperCase().indexOf(qU) >= 0 || normStr(d).indexOf(qN) >= 0; });
     var inCG = (r.coolgears||[]).some(function(d) { return d.toUpperCase().indexOf(qU) >= 0 || normStr(d).indexOf(qN) >= 0; });
     var inT = (r.toyotas||[]).some(function(t) { return t.toUpperCase().indexOf(qU) >= 0 || normStr(t).indexOf(qN) >= 0; });
+    var inFut = r.future ? (((r.future.denso||'')+' '+(r.future.coolgear||'')+' '+(r.future.toyota||'')).toUpperCase().indexOf(qU)>=0) : false;
     var inAr = (r.name_ar || '').indexOf(q) >= 0;
     var inEn = (r.name_en || '').toUpperCase().indexOf(qU) >= 0;
-    return inD || inCG || inT || inAr || inEn;
+    return inD || inCG || inT || inAr || inEn || inFut;
   });
 
   if (!res.length) { el.innerHTML = '<div class="empty">&#x644;&#x627; &#x62A;&#x648;&#x62C;&#x62F; &#x646;&#x62A;&#x627;&#x626;&#x62C;</div>'; return; }
@@ -1717,6 +1726,7 @@ function doSearch() {
       ? (r.t||r.toyotas||[]).map(function(t) { return '<span class="tag t">' + esc(t) + '</span><button class="cp" data-cp="'+t+'"> ⧈</button>'; }).join('')
       : '<span style="color:var(--text3);font-size:12px">&mdash;</span>';
     var name = esc(r.a || r.name_ar || r.e || r.name_en || '&mdash;');
+    var futBadge = (r.future && (r.future.denso||r.future.coolgear||r.future.toyota)) ? ' <span style="background:#c00;color:#fff;font-size:11px;padding:2px 6px;border-radius:6px;white-space:nowrap">قطعة طلب مسبق</span>' : '';
     var catBadge = (r.k||r.category) ? '<span class="rc-cat">' + esc(r.k||r.category) + '</span>' : '';
     var meta = '';
     if (r.price) meta += '<span class="rc-price">' + r.price.toFixed(2) + ' AED</span>';
@@ -1725,7 +1735,7 @@ function doSearch() {
     var imgBox = '<div class="rc-img-box" onclick="event.stopPropagation();uploadImgForCard('+r.id+',event)" title="اضغط لإضافة صورة">'+(r.img?'<img src="'+r.img+'" alt="صورة القطعة">':'<div>📷</div><div class="rc-img-lbl">صورة<br>المنتج</div>')+'<div class="rc-img-actions"><button class="rc-img-act-btn" title="تعديل" onclick="event.stopPropagation();uploadImgForCard('+r.id+',event)">✏️</button><button class="rc-img-act-btn" style="color:#ff8080" title="حذف" onclick="event.stopPropagation();deleteImgForCard('+r.id+')">🗑️</button></div></div>'
     var nameEn = r.name_en ? '<div class="rc-name-en">'+esc(r.name_en)+'</div>' : '';
     return '<div class="rc" data-id="'+r.id+'" onclick="openCard(+this.dataset.id)">' +
-      '<div class="rc-top"><div><div class="rc-name">'+name+'</div>'+nameEn+'</div>'+catBadge+'</div>' +
+      '<div class="rc-top"><div><div class="rc-name">'+name+futBadge+'</div>'+nameEn+'</div>'+catBadge+'</div>' +
       '<div class="rc-body">' +
         imgBox +
         '<div class="rc-nums">' +
@@ -1804,6 +1814,7 @@ function addEntry() {
   }
   db.push({
     id: Date.now(),
+    future:{denso:(document.getElementById('fut-d').value||'').trim(),coolgear:(document.getElementById('fut-cg').value||'').trim(),toyota:(document.getElementById('fut-t').value||'').trim()},
     densos: dens,
     coolgears: cgs,
     c: cgs,
@@ -1821,6 +1832,7 @@ function addEntry() {
 
 function resetForm() {
   initForm();
+  ['fut-d','fut-cg','fut-t'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   ['n-ar','n-en','n-pr','n-qt'].forEach(function(id) { document.getElementById(id).value = ''; });
   document.getElementById('n-cat').value = '';
 }
