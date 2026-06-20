@@ -2134,13 +2134,19 @@ function editToyotaInline(idx) {
 
 <script> document.querySelector(".hdr").insertAdjacentHTML( "afterbegin", "<button onclick='doLogout()' style='background:#c0392b;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:bold;margin-right:12px;font-family:inherit;'>&#x23FB; &#x62e;&#x631;&#x648;&#x62c;</button>" ); </script>  
 <script>
-/* ===== طلبات العام القادم (Future Orders) — كتلة مستقلة ===== */
+/* ===== طلبات العام القادم (Future Orders) — نسخة Firebase ===== */
 (function(){
   if(window.__futureOrdersInstalled) return;
-  var FKEY='dn_future_orders';
-  function fLoad(){ try{return JSON.parse(localStorage.getItem(FKEY))||[]}catch(e){return[]} }
-  function fSave(a){ localStorage.setItem(FKEY, JSON.stringify(a)); }
+  var FB='https://densoparts-default-rtdb.asia-southeast1.firebasedatabase.app/densoparts/future_orders.json';
+  var cache=[];
   function esc2(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}); }
+  function pull(cb){
+    fetch(FB).then(function(r){return r.json();}).then(function(d){
+      cache = Array.isArray(d)?d:(d?Object.keys(d).map(function(k){return d[k];}):[]);
+      if(cb)cb();
+    }).catch(function(e){ if(cb)cb(); });
+  }
+  function push(){ return fetch(FB,{method:'PUT',body:JSON.stringify(cache)}); }
   function build(){
     var tabsBar=document.querySelector('.tabs');
     if(tabsBar && !document.getElementById('fut-tab-btn')){
@@ -2152,7 +2158,7 @@ function editToyotaInline(idx) {
     if(!document.getElementById('tab-future')){
       var panel=document.createElement('div');
       panel.id='tab-future'; panel.className='panel';
-      panel.innerHTML='<div class="sec"><div class="sec-title" style="color:#c00">قائمة طلبات العام القادم (طلب مسبق)</div><div id="fut-list" style="margin-top:10px"></div></div>';
+      panel.innerHTML='<div class="sec"><div class="sec-title" style="color:#c00">قائمة طلبات العام القادم (طلب مسبق) — محفوظة سحابياً</div><div id="fut-list" style="margin-top:10px">جارٍ التحميل...</div></div>';
       var ordTab=document.getElementById('tab-orders');
       if(ordTab && ordTab.parentNode){ ordTab.parentNode.insertBefore(panel, ordTab.nextSibling); }
       else { document.body.appendChild(panel); }
@@ -2160,23 +2166,26 @@ function editToyotaInline(idx) {
   }
   window.renderFutureOrders=function(){
     var list=document.getElementById('fut-list'); if(!list) return;
-    var data=fLoad();
-    if(!data.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:#888">لا توجد طلبات مستقبلية محفوظة بعد.</div>'; return; }
+    if(!cache.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:#888">لا توجد طلبات مستقبلية محفوظة بعد.</div>'; return; }
     var h='<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#c00;color:#fff"><th style="padding:8px;border:1px solid #ddd">القطعة</th><th style="padding:8px;border:1px solid #ddd">Denso مستقبلي</th><th style="padding:8px;border:1px solid #ddd">Cool Gear مستقبلي</th><th style="padding:8px;border:1px solid #ddd">Toyota مستقبلي</th><th style="padding:8px;border:1px solid #ddd">التاريخ</th><th style="padding:8px;border:1px solid #ddd">حذف</th></tr></thead><tbody>';
-    data.forEach(function(r){
+    cache.forEach(function(r){ if(!r) return;
       h+='<tr><td style="padding:8px;border:1px solid #ddd">'+esc2(r.nameAr||r.nameEn||'-')+(r.nameEn&&r.nameAr?'<br><small style="color:#888">'+esc2(r.nameEn)+'</small>':'')+'</td><td style="padding:8px;border:1px solid #ddd;text-align:center">'+esc2(r.denso||'-')+'</td><td style="padding:8px;border:1px solid #ddd;text-align:center">'+esc2(r.coolgear||'-')+'</td><td style="padding:8px;border:1px solid #ddd;text-align:center">'+esc2(r.toyota||'-')+'</td><td style="padding:8px;border:1px solid #ddd;text-align:center">'+esc2(r.date||'-')+'</td><td style="padding:8px;border:1px solid #ddd;text-align:center"><button onclick="deleteFutureOrder('+r.id+')" style="background:#c00;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer">حذف</button></td></tr>';
     });
     h+='</tbody></table>';
     list.innerHTML=h;
   };
-  window.deleteFutureOrder=function(id){ fSave(fLoad().filter(function(r){return r.id!==id;})); window.renderFutureOrders(); };
+  window.deleteFutureOrder=function(id){
+    cache = cache.filter(function(r){return r && r.id!==id;});
+    push().then(function(){ window.renderFutureOrders(); });
+  };
   window.addFutureOrder=function(o){
     var d=(o.denso||'').trim(), cg=(o.coolgear||'').trim(), t=(o.toyota||'').trim();
     if(!d&&!cg&&!t) return false;
-    var data=fLoad();
-    data.unshift({id:Date.now()+Math.floor(Math.random()*1000),denso:d,coolgear:cg,toyota:t,nameAr:(o.nameAr||'').trim(),nameEn:(o.nameEn||'').trim(),date:new Date().toISOString().slice(0,10)});
-    fSave(data);
-    if(document.getElementById('fut-list')) window.renderFutureOrders();
+    var item={id:Date.now()+Math.floor(Math.random()*1000),denso:d,coolgear:cg,toyota:t,nameAr:(o.nameAr||'').trim(),nameEn:(o.nameEn||'').trim(),date:new Date().toISOString().slice(0,10)};
+    pull(function(){
+      cache.unshift(item);
+      push().then(function(){ if(document.getElementById('fut-list')) window.renderFutureOrders(); });
+    });
     return true;
   };
   function install(){
@@ -2193,11 +2202,11 @@ function editToyotaInline(idx) {
     }
     if(typeof window.sw==='function' && !window.sw.__futWrapped){
       var _s=window.sw;
-      window.sw=function(name,el){ var r=_s.apply(this,arguments); if(name==='future'){ try{window.renderFutureOrders();}catch(e){} } return r; };
+      window.sw=function(name,el){ var r=_s.apply(this,arguments); if(name==='future'){ pull(function(){ window.renderFutureOrders(); }); } return r; };
       window.sw.__futWrapped=true;
     }
     window.__futureOrdersInstalled=true;
-    try{ window.renderFutureOrders(); }catch(e){}
+    pull(function(){ window.renderFutureOrders(); });
   }
   if(document.readyState==='complete'||document.readyState==='interactive'){ setTimeout(install,800); }
   else { window.addEventListener('load',function(){ setTimeout(install,800); }); }
