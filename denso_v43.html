@@ -1805,7 +1805,8 @@ function getVals(type) {
 
 function addEntry() {
   var dens = getVals('d'), toys = getVals('t');
-  if (!dens.length && !toys.length) { toast('&#x623;&#x636;&#x641; &#x631;&#x642;&#x645;&#x64B;&#x627; &#x648;&#x627;&#x62D;&#x62F;&#x64B;&#x627; &#x639;&#x644;&#x649; &#x627;&#x644;&#x623;&#x642;&#x644;', 'err'); return; }
+  var hasFut = ((document.getElementById('fut-d')||{}).value||'').trim() || ((document.getElementById('fut-cg')||{}).value||'').trim() || ((document.getElementById('fut-t')||{}).value||'').trim();
+  if (!dens.length && !toys.length && !hasFut) { toast('&#x623;&#x636;&#x641; &#x631;&#x642;&#x645;&#x64B;&#x627; &#x648;&#x627;&#x62D;&#x62F;&#x64B;&#x627; &#x639;&#x644;&#x649; &#x627;&#x644;&#x623;&#x642;&#x644;', 'err'); return; }
   // Collect Cool Gear numbers
   var cgs=[];
   var cgInp=document.getElementById('cg-inp');
