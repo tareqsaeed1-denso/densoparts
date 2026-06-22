@@ -2368,7 +2368,7 @@ function editToyotaInline(idx) {
   else { window.addEventListener('load',function(){ setTimeout(install,800); }); }
 })();
 
-/* ===== أزرار حذف طلبات العام القادم (نسخة محسّنة - MutationObserver) ===== */
+/* ===== أزرار حذف طلبات العام القادم (الإصلاح النهائي - مراقبة body) ===== */
 (function(){
   if (window.__futDelObserver) { try{ window.__futDelObserver.disconnect(); }catch(e){} }
   function rowKey(tr){
@@ -2417,18 +2417,16 @@ function editToyotaInline(idx) {
     var title=sec.querySelector('.sec-title');
     if(title&&title.nextSibling){ sec.insertBefore(bar,title.nextSibling); } else { sec.insertBefore(bar,sec.firstChild); }
   }
-  function run(){ ensureDeleteAll(); enhance(); }
-  function start(){
-    var panel=document.getElementById('tab-future');
-    var obs=new MutationObserver(function(){ run(); });
-    if(panel){ obs.observe(panel,{childList:true,subtree:true}); }
-    else { document.addEventListener('DOMContentLoaded', start); return; }
+  function run(){ try{ ensureDeleteAll(); enhance(); }catch(e){} }
+  function boot(){
+    // نراقب الصفحة كاملة لأن لوحة طلبات العام القادم تُنشأ ديناميكيًا (Firebase) في وقت لاحق
+    var obs=new MutationObserver(run);
+    obs.observe(document.body,{childList:true,subtree:true});
     window.__futDelObserver=obs;
     run();
-    setTimeout(run,500); setTimeout(run,1500);
   }
-  if(document.getElementById('tab-future')){ start(); }
-  else { document.addEventListener('DOMContentLoaded', start); window.addEventListener('load', start); }
+  if(document.body){ boot(); }
+  else { document.addEventListener('DOMContentLoaded', boot); }
 })();
 
 </script>
