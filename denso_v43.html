@@ -2436,3 +2436,22 @@ function editToyotaInline(idx) {
 
 </script>
 </body></html>
+<script>
+/* ===== ميزة: تاريخ آخر تحديث للسعر + اسم المورد ===== */
+(function(){
+  if (window.__PUPD_INSTALLED__) return;
+  window.__PUPD_INSTALLED__ = true;
+  window.supName = function(id){ try{ var s=(sups||[]).find(function(x){return String(x.id)===String(id);}); return s ? (s.n||('#'+id)) : ('#'+id); }catch(e){ return '#'+id; } };
+  window.fmtPupd = function(ts){ if(!ts) return 'غير معروف'; try{ var d=new Date(ts); return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }catch(e){ return 'غير معروف'; } };
+  window.pupdLine = function(part){ if(!part||!part.prices||!Object.keys(part.prices).length) return ''; var best=null,bestSid=null; Object.keys(part.prices).forEach(function(sid){ var ts=part.pupd&&part.pupd[sid]; if(ts&&(best===null||ts>best)){best=ts;bestSid=sid;} }); if(best===null) return 'آخر تحديث للسعر: غير معروف'; return 'آخر تحديث للسعر: '+fmtPupd(best)+' — '+supName(bestSid); };
+  function snap(){var m={};try{(db||[]).forEach(function(p){if(p&&p.prices)m[p.id]=Object.assign({},p.prices);});}catch(e){}return m;}
+  function stamp(b){var now=Date.now();try{(db||[]).forEach(function(p){if(!p||!p.prices)return;var o=b[p.id]||{};Object.keys(p.prices).forEach(function(s){if(String(o[s])!==String(p.prices[s])){p.pupd=p.pupd||{};p.pupd[s]=now;}});});}catch(e){}}
+  function wrap(n){var orig=window[n];if(typeof orig!=='function')return;window[n]=function(){var b=snap();var r=orig.apply(this,arguments);try{stamp(b);}catch(e){}Promise.resolve(r).then(function(){try{stamp(b);}catch(e){}});setTimeout(function(){try{stamp(b);}catch(e){}},50);return r;};}
+  ['importSupPrices','saveEditPrices','savePriceFromReview'].forEach(wrap);
+  function partsIn(c){var t=c.textContent||'',m=[];db.forEach(function(p){var n=[].concat(p.densos||[],p.toyotas||[],p.coolgears||[],p.o||[],p.t||[]);for(var i=0;i<n.length;i++){if(n[i]&&t.indexOf(n[i])>=0){m.push(p);break;}}});return m;}
+  function renderInto(c){var ls=[];c.querySelectorAll('div').forEach(function(el){if(el.children.length===0&&(el.textContent||'').trim()==='أسعار الموردين')ls.push(el);});if(!ls.length)return;var ps=partsIn(c),p=ps.length===1?ps[0]:null;ls.forEach(function(l){var b=l.parentElement;if(!b)return;var ex=b.querySelector('.pupd-line');if(ex)ex.remove();var d=document.createElement('div');d.className='pupd-line';d.style.cssText='margin-top:4px;font-size:12px;color:#666;direction:rtl;text-align:right;';d.textContent=p?pupdLine(p):'آخر تحديث للسعر: غير معروف';b.appendChild(d);});}
+  function run(){var s=document.getElementById('s-res');if(s)renderInto(s);var cv=document.getElementById('cv-result');if(cv)renderInto(cv);}
+  new MutationObserver(function(){clearTimeout(window.__pupdT);window.__pupdT=setTimeout(run,120);}).observe(document.body,{childList:true,subtree:true});
+  run();
+})();
+</script>
