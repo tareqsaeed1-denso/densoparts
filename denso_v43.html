@@ -2098,8 +2098,7 @@ document.addEventListener('click',function(e){
 // Firebase Realtime Database - works from any HTML!
 var RTDB='https://densoparts-default-rtdb.asia-southeast1.firebasedatabase.app';
 var FB_KEY='AIzaSyD6m_c5jvoZ_aPDinb7DKMwVOcig_Z7eyg';
-var FB_NODE=RTDB+'/densoparts.json?auth='+FB_KEY;
-
+function FB_NODE_FN(){return RTDB+'/densoparts.json?auth='+(window.FB_TOKEN||'');}
 function syncToFB(){
   var bar=document.getElementById('sync-bar');
   if(bar){bar.style.display='block';bar.textContent='جاري المزامنة...';}
@@ -2111,7 +2110,7 @@ function syncToFB(){
     ts:Date.now()
   });
   var xhr=new XMLHttpRequest();
-  xhr.open('PUT',FB_NODE,true);
+ xhr.open('PUT',FB_NODE_FN(),true);
   xhr.setRequestHeader('Content-Type','application/json');
   xhr.onload=function(){
     if(bar){
@@ -2133,7 +2132,7 @@ function syncToFB(){
 
 function loadFromFB(cb){
   var xhr=new XMLHttpRequest();
-  xhr.open('GET',FB_NODE,true);
+xhr.open('GET',FB_NODE_FN(),true);
   xhr.onload=function(){
     if(xhr.status===200){
       try{
@@ -2177,6 +2176,7 @@ if(p)document.getElementById('li-pass').value=p;
 document.getElementById('remember-me').checked=true;}}
 
 function doLogout(){if(confirm('خروج من التطبيق؟')){localStorage.removeItem('saved_pass');localStorage.removeItem('remember_me');sessionStorage.removeItem('dn_token');sessionStorage.removeItem('dn_email');location.reload();}} function doLogin(){
+  try{ window.fbLogin(document.getElementById('li-email').value, document.getElementById('li-pass').value); }catch(e){}
 if(document.getElementById('remember-me').checked){localStorage.setItem('saved_email',document.getElementById('li-email').value);localStorage.setItem('saved_pass',document.getElementById('li-pass').value);localStorage.setItem('remember_me','1');}
 
   var email=document.getElementById("li-email").value.trim();
@@ -2238,7 +2238,7 @@ loadFromFB(function(){
 
 // Auto-sync every 30 seconds
 setInterval(function(){
-  if(typeof FB_NODE !== 'undefined'){
+if(typeof FB_NODE_FN !== 'undefined')
     loadFromFB(function(){
       renderSups();
       renderOrders();
@@ -2434,6 +2434,16 @@ function editToyotaInline(idx) {
   else { document.addEventListener('DOMContentLoaded', boot); }
 })();
 
+</script>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onIdTokenChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const app = initializeApp({ apiKey: FB_KEY, authDomain: "densoparts.firebaseapp.com" });
+const auth = getAuth(app);
+window.FB_TOKEN = null;
+onIdTokenChanged(auth, async (u) => { window.FB_TOKEN = u ? await u.getIdToken() : null; });
+window.fbLogin = (email, pass) => signInWithEmailAndPassword(auth, email, pass);
 </script>
 </body></html>
 <script>
