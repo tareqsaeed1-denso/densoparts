@@ -2238,7 +2238,7 @@ loadFromFB(function(){
 
 // Auto-sync every 30 seconds
 setInterval(function(){
-if(typeof FB_NODE_FN !== 'undefined')
+if(typeof FB_NODE_FN !== 'undefined'){
     loadFromFB(function(){
       renderSups();
       renderOrders();
