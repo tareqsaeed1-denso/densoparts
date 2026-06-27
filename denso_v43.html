@@ -1,4 +1,4 @@
-h<!DOCTYPE html>
+<!DOCTYPE html>
 <!-- saved from url=(0061)https://tareqsaeed1-denso.github.io/densoparts/denso_v41.html -->
 <html lang="ar" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -2439,7 +2439,7 @@ function editToyotaInline(idx) {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onIdTokenChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const app = initializeApp({ apiKey: FB_KEY, authDomain: "densoparts.firebaseapp.com" });
+const app = initializeApp({ apiKey: "AIzaSyD6m_c5jvoZ_aPDinb7DKMwVOcig_Z7eyg", authDomain: "densoparts.firebaseapp.com" });
 const auth = getAuth(app);
 window.FB_TOKEN = null;
 onIdTokenChanged(auth, async (u) => { window.FB_TOKEN = u ? await u.getIdToken() : null; });
