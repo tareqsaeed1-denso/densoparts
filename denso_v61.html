@@ -1799,6 +1799,7 @@ function deleteOrder(id){
 }
 
 function deleteAllOrders(){
+  window._bulkDel=window._bulkDel||{}; window._bulkDel.orders=1;
   orders=[];
   saveOrders();renderOrders();
 }
@@ -2492,6 +2493,8 @@ function loadDB() {
   try{var ss=localStorage.getItem('dn_s');if(ss)sups=JSON.parse(ss);}catch(x){}
   if(!sups||!sups.length)sups=DEFAULT_SUPS.slice();
   try { var s = localStorage.getItem(SK); if (s) db = JSON.parse(s); } catch(e) { db = []; }
+  /* fix62: نسخة وحدة من قطع هذا الجهاز كما هي قبل أول مزامنة بعد الإصلاح (للاسترجاع لو احتجنا) */
+  try{ if(db.length>=5 && !localStorage.getItem('dn_pre62_copy')) localStorage.setItem('dn_pre62_copy',JSON.stringify({t:Date.now(),db:db})); }catch(e){}
   if (!db.length) initDB(); else updStats();
   buildCats();
   doSearch();
@@ -2738,7 +2741,7 @@ function delEntry(id) {
 
 function clearAll() {
   if (!confirm('&#x62D;&#x630;&#x641; &#x643;&#x644; &#x627;&#x644;&#x628;&#x64A;&#x627;&#x646;&#x627;&#x62A;&#x61F;')) return;
-  db = []; saveDB(); renderTable(); doSearch();
+  window._bulkDel=window._bulkDel||{}; window._bulkDel.db=1; db = []; saveDB(); renderTable(); doSearch();
 }
 
 function expData() {
@@ -2917,6 +2920,7 @@ function _getL(c){return c==='db'?(db||[]):c==='sups'?(sups||[]):c==='orders'?(o
 function _setL(c,l){if(c==='db')db=l;else if(c==='sups')sups=l;else if(c==='orders')orders=l;else if(window.futReplace)futReplace(l);}
 function _mapC(list){var m={};(list||[]).forEach(function(x){var k=_ck(x);if(k&&!(k in m))m[k]=_h(x);});return m;}
 function _saveLocalAll(){try{localStorage.setItem(SK,JSON.stringify(db));}catch(e){} try{localStorage.setItem('dn_s',JSON.stringify(sups));localStorage.setItem(ORD_KEY,JSON.stringify(orders));}catch(e){}}
+function _saveColl(c){try{ if(c==='db')localStorage.setItem(SK,JSON.stringify(db)); else if(c==='sups')localStorage.setItem('dn_s',JSON.stringify(sups)); else if(c==='orders')localStorage.setItem(ORD_KEY,JSON.stringify(orders)); return true; }catch(e){return false;}}
 function _cmap(){return _J('dn_cmap56',null);}
 function _cdirty(){return _J('dn_cdirty56',{})||{};}
 function _anyDirty(){var d=_cdirty();return _COLL.some(function(c){return d[c]&&Object.keys(d[c]).length>0;});}
@@ -2926,6 +2930,9 @@ function _backupLocal(){try{localStorage.setItem('dn_conflict_bak',JSON.stringif
 /* نسجّل اللي تغيّر في هذا الجهاز من آخر مرة (مع وقت التعديل) */
 function _markDirty(){
   var cm=_cmap(); if(!cm) return;
+  /* fix62: قائمة فاضية في الجهاز مع خريطة مليانة = نسخة الجهاز ناقصة، مو حذف. نرجع نحمّل من السيرفر وما نحذف شي */
+  var _bad=['db','sups','orders'].some(function(c){ return !_getL(c).length && Object.keys(cm[c]||{}).length>=5 && !(window._bulkDel&&window._bulkDel[c]); });
+  if(_bad){ try{localStorage.removeItem('dn_cmap56');localStorage.removeItem('dn_cdirty56');localStorage.removeItem('dn_cseen56');}catch(e){} window._fbLoaded=false; return; }
   var d=_cdirty(), now=Date.now(), ch=false;
   _COLL.forEach(function(c){
     var cur=_mapC(_getL(c)), prev=cm[c]||{}, dc=d[c]||{};
@@ -2960,6 +2967,7 @@ function _mergeColl(c,srv,first){
   out=desc?added.concat(out):out.concat(added);
   d[c]=dc; _S('dn_cdirty56',d);
   _setL(c,out);
+  if(!_saveColl(c)) return changed; /* fix62: ما نسجّل الخريطة إلا بعد حفظ القائمة نفسها */
   var cm=_cmap()||{}; cm[c]=_mapC(out); _S('dn_cmap56',cm);
   return changed;
 }
