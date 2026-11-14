@@ -7,67 +7,167 @@
 <title>استرجاع البيانات</title>
 <style>
   body{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;background:#f4f5f7;color:#15202b;margin:0;padding:16px;line-height:1.7}
-  .box{max-width:560px;margin:24px auto;background:#fff;border:1px solid #d6dbe1;border-radius:14px;padding:22px}
-  h1{font-size:22px;margin:0 0 12px}
-  .n{font-size:17px;margin:6px 0}
-  .n b{font-size:22px}
-  button,a.btn{display:block;width:100%;box-sizing:border-box;text-align:center;font:inherit;font-size:18px;font-weight:700;padding:14px;border-radius:10px;border:0;margin-top:14px;cursor:pointer;text-decoration:none}
-  #b1{background:#0b4f57;color:#fff}
-  #b2{background:#1d6f3a;color:#fff}
+  .box{max-width:620px;margin:20px auto;background:#fff;border:1px solid #d6dbe1;border-radius:14px;padding:22px}
+  h1{font-size:22px;margin:0 0 6px} h2{font-size:17px;margin:20px 0 6px}
+  .row{border:1px solid #d6dbe1;border-radius:10px;padding:12px;margin-top:10px}
+  .row b.n{font-size:22px}
+  .row.good{border-color:#1d6f3a;background:#f1faf3}
+  button{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:17px;font-weight:700;padding:13px;border-radius:10px;border:0;margin-top:10px;cursor:pointer;background:#0b4f57;color:#fff}
+  button.go{background:#1d6f3a} button.sec{background:#fff;color:#0b4f57;border:2px solid #0b4f57}
   [hidden]{display:none!important}
   [disabled]{opacity:.45;cursor:not-allowed}
-  .msg{margin-top:14px;padding:12px;border-radius:10px;font-weight:600}
-  .ok{background:#e3f4e8;color:#14532d}.bad{background:#fde8e8;color:#8a1c1c}
+  input{font:inherit;font-size:16px;width:100%;box-sizing:border-box;padding:11px;border:1.5px solid #9aa5b1;border-radius:10px;margin-top:8px;direction:ltr;text-align:left}
+  .pw{position:relative}.pw button{position:absolute;inset-inline-end:6px;top:14px;width:auto;margin:0;padding:6px 10px;font-size:14px;background:#eef1f4;color:#15202b}
+  .msg{margin-top:12px;padding:12px;border-radius:10px;font-weight:600}
+  .ok{background:#e3f4e8;color:#14532d}.bad{background:#fde8e8;color:#8a1c1c}.wait{background:#e8f0fe;color:#1e3a8a}
   .small{font-size:14px;color:#55606b}
 </style>
 </head>
 <body>
 <div class="box">
   <h1>استرجاع بيانات دنسو</h1>
-  <div id="info"></div>
-  <button id="b1" type="button">١ — تنزيل نسخة احتياطية وتجهيز الاسترجاع</button>
-  <div id="m1"></div>
-  <a id="b2" class="btn" href="./denso_v61.html" hidden>٢ — فتح دنسو لرفع البيانات</a>
-  <p class="small">هذه الصفحة لا ترسل شيئاً إلى أي مكان. تقرأ النسخة المحفوظة في هذا المتصفح فقط.</p>
+  <p class="small">هذه الصفحة تبحث عن نسخ القطع المحفوظة، ولا تحذف شيئاً.</p>
+
+  <h2>١ — هذا المتصفح</h2>
+  <div id="local"></div>
+
+  <h2>٢ — الخادم</h2>
+  <div id="login" hidden>
+    <input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
+    <div class="pw"><input id="pw" type="password" placeholder="كلمة المرور" autocomplete="current-password"><button type="button" id="eye">إظهار</button></div>
+    <button type="button" id="signin">فحص الخادم</button>
+  </div>
+  <div id="smsg"></div>
+  <div id="server"></div>
+
+  <button type="button" id="dl" class="sec" hidden>تنزيل كل النسخ الموجودة في ملف</button>
+  <div id="rmsg"></div>
 </div>
 <script>
 (function(){
-  var SK='denso_v42';
-  function J(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+  var RTDB='https://densoparts-default-rtdb.asia-southeast1.firebasedatabase.app';
+  var KEY='AIzaSyD6m_c5jvoZ_aPDinb7DKMwVOcig_Z7eyg';
+  var $=function(id){return document.getElementById(id);};
+  var TOKEN=null, SOURCES=[], SERVER={};
+  function J(s){try{return typeof s==='string'?JSON.parse(s):s;}catch(e){return null;}}
   function ck(x){return (x&&x.id!=null&&x.id!=='')?'i'+String(x.id).replace(/[.#$\/\[\]]/g,'_'):null;}
-  var db=J(SK,[])||[], sups=J('dn_s',[])||[], orders=J('dn_orders',[])||[], fut=J('dn_future',[])||[];
-  var info=document.getElementById('info'), b1=document.getElementById('b1'), b2=document.getElementById('b2'), m1=document.getElementById('m1');
-  info.innerHTML='<div class="n">القطع المحفوظة في هذا المتصفح: <b>'+db.length+'</b></div>'+
-    '<div class="n">الموردون: <b>'+sups.length+'</b> — الطلبات: <b>'+orders.length+'</b></div>';
-  if(!db.length){
-    b1.disabled=true;
-    m1.innerHTML='<div class="msg bad">لا توجد قطع محفوظة في هذا المتصفح. لا تفتح دنسو، وأخبر من أرسل لك هذه الصفحة.</div>';
-    return;
-  }
-  b1.onclick=function(){
-    try{
-      // 1) a file copy of everything stored here (sign-in and API keys left out)
-      var all={}; for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k==='dn_rt_p'||k==='dn_apikey'||k==='saved_email') continue; all[k]=localStorage.getItem(k);}
-      var blob=new Blob([JSON.stringify({savedAt:new Date().toISOString(),data:all})],{type:'application/json'});
-      var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-      a.download='denso-backup-'+new Date().toISOString().slice(0,10)+'.json'; document.body.appendChild(a); a.click(); a.remove();
-      // 2) a second copy inside the browser
-      try{localStorage.setItem('dn_rescue_copy',JSON.stringify({t:Date.now(),db:db,sups:sups,orders:orders,fut:fut}));}catch(e){}
-      // 3) mark every part, supplier and order as "changed here just now", so this copy wins and is uploaded
-      var d=J('dn_cdirty56',{})||{}, now=Date.now();
-      [['db',db],['sups',sups],['orders',orders]].forEach(function(p){
-        var dc=d[p[0]]||{}; p[1].forEach(function(x){var k=ck(x); if(k) dc[k]=now;}); d[p[0]]=dc;
-      });
-      localStorage.setItem('dn_cdirty56',JSON.stringify(d));
-      // check it was really written
-      var chk=J('dn_cdirty56',{}), n=Object.keys((chk&&chk.db)||{}).length;
-      if(n<db.length*0.99) throw new Error('not saved');
-      m1.innerHTML='<div class="msg ok">تم. نزلت النسخة الاحتياطية وجُهّز استرجاع '+n+' قطعة. اضغط الزر الثاني الآن.</div>';
-      b1.disabled=true; b2.hidden=false;
-    }catch(e){
-      m1.innerHTML='<div class="msg bad">تعذر التجهيز. لا تفتح دنسو، وأخبر من أرسل لك هذه الصفحة.</div>';
+  function isPart(x){return !!x&&typeof x==='object'&&!Array.isArray(x)&&(x.densos||x.o||x.coolgears||x.c||x.toyotas||x.t||x.name_ar||x.a||x.name_en)&&!x._del;}
+  function partsIn(v){ if(!Array.isArray(v)) return null; var p=v.filter(isPart); return (p.length&&p.length>=v.length*0.6)?p:null; }
+  function fmt(t){ if(!t) return ''; try{return new Date(+t).toLocaleString('ar-SA-u-ca-gregory-nu-latn',{dateStyle:'medium',timeStyle:'short'});}catch(e){return '';} }
+  function addSource(id,label,parts,note,extra){ if(!parts||!parts.length) return; SOURCES.push({id:id,label:label,parts:parts,note:note||'',extra:extra||{}}); }
+
+  /* ---------- 1) this browser ---------- */
+  (function(){
+    var out=[], cur=J(localStorage.getItem('denso_v42'))||[];
+    out.push('<div class="row">النسخة الحالية في هذا المتصفح: <b class="n">'+(partsIn(cur)||[]).length+'</b> قطعة</div>');
+    addSource('local-current','النسخة الحالية في هذا المتصفح',partsIn(cur));
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i); if(k==='denso_v42') continue;
+      var v=J(localStorage.getItem(k)); if(!v) continue;
+      var cand=partsIn(v)||(v&&typeof v==='object'&&!Array.isArray(v)?partsIn(v.db):null);
+      if(cand){ addSource('local-'+k,'نسخة أخرى في هذا المتصفح ('+k+')',cand,v.t?fmt(v.t):''); out.push('<div class="row">نسخة أخرى محفوظة ('+k+'): <b class="n">'+cand.length+'</b> قطعة</div>'); }
     }
+    $('local').innerHTML=out.join('');
+  })();
+
+  /* ---------- sign-in ---------- */
+  function post(url,body,form){ return fetch(url,{method:'POST',headers:{'Content-Type':form?'application/x-www-form-urlencoded':'application/json'},body:form?body:JSON.stringify(body)}).then(function(r){return r.json();}); }
+  function say(el,cls,txt){ $(el).innerHTML=txt?'<div class="msg '+cls+'">'+txt+'</div>':''; }
+  function start(){
+    var rt=''; try{rt=sessionStorage.getItem('dn_rt')||localStorage.getItem('dn_rt_p')||'';}catch(e){}
+    if(!rt){ $('login').hidden=false; return; }
+    say('smsg','wait','جارٍ فحص الخادم…');
+    post('https://securetoken.googleapis.com/v1/token?key='+KEY,'grant_type=refresh_token&refresh_token='+encodeURIComponent(rt),true)
+      .then(function(r){ if(r.id_token){TOKEN=r.id_token; scan();} else { say('smsg','',''); $('login').hidden=false; } })
+      .catch(function(){ say('smsg','bad','تعذر الاتصال. تأكد من الإنترنت ثم حدّث الصفحة.'); });
+  }
+  $('eye').onclick=function(){ var p=$('pw'); p.type=p.type==='password'?'text':'password'; this.textContent=p.type==='password'?'إظهار':'إخفاء'; };
+  $('signin').onclick=function(){
+    var em=$('em').value.trim(), pw=$('pw').value; if(!em||!pw){ say('smsg','bad','أدخل البريد وكلمة المرور.'); return; }
+    say('smsg','wait','جارٍ فحص الخادم…');
+    post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+KEY,{email:em,password:pw,returnSecureToken:true})
+      .then(function(r){ if(r.idToken){TOKEN=r.idToken; $('login').hidden=true; scan();} else say('smsg','bad','البريد أو كلمة المرور غير صحيحة.'); })
+      .catch(function(){ say('smsg','bad','تعذر الاتصال. تأكد من الإنترنت.'); });
   };
+  function rget(path,qs){ return fetch(RTDB+'/'+path+'.json?auth='+encodeURIComponent(TOKEN)+(qs?'&'+qs:'')).then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json(); }); }
+
+  /* ---------- 2) the server ---------- */
+  function fsVal(v){ if(!v||typeof v!=='object') return v;
+    if('stringValue' in v) return v.stringValue; if('integerValue' in v) return +v.integerValue; if('doubleValue' in v) return v.doubleValue; if('booleanValue' in v) return v.booleanValue; if('nullValue' in v) return null;
+    if(v.arrayValue) return (v.arrayValue.values||[]).map(fsVal);
+    if(v.mapValue){ var o={},f=v.mapValue.fields||{}; Object.keys(f).forEach(function(k){o[k]=fsVal(f[k]);}); return o; }
+    return null; }
+  function findParts(v,depth){ if(depth>4||v==null) return null;
+    if(typeof v==='string'){ if(v.length<50) return null; return findParts(J(v),depth+1); }
+    var p=partsIn(v); if(p) return p;
+    if(typeof v==='object'&&!Array.isArray(v)){ var best=null; Object.keys(v).forEach(function(k){ var c=findParts(v[k],depth+1); if(c&&(!best||c.length>best.length)) best=c; }); return best; }
+    return null; }
+  function scan(){
+    var out=[];
+    rget('densoparts/c/db').then(function(cdb){
+      cdb=cdb||{}; SERVER.cdb=cdb; var live=[],dead=0,lastDel=0;
+      Object.keys(cdb).forEach(function(k){ var o=J(cdb[k]); if(!o) return; if(o._del){dead++; if(+o._t>lastDel) lastDel=+o._t;} else { delete o._t; live.push(o); } });
+      SERVER.live=live.length;
+      out.push('<div class="row">النسخة الحالية على الخادم: <b class="n">'+live.length+'</b> قطعة'+(dead?' — المحذوفة: <b>'+dead+'</b>'+(lastDel?' (آخر حذف: '+fmt(lastDel)+')':''):'')+'</div>');
+      return rget('densoparts/db').catch(function(){return null;});
+    }).then(function(old){
+      var p=partsIn(J(old)); out.push('<div class="row">النسخة الأقدم على الخادم: <b class="n">'+(p?p.length:0)+'</b> قطعة</div>');
+      addSource('server-old','النسخة الأقدم على الخادم',p);
+      return rget('densoparts/sups').catch(function(){return null;});
+    }).then(function(os){ SERVER.oldSups=J(os);
+      return fetch('https://firestore.googleapis.com/v1/projects/densoparts/databases/(default)/documents/data/densoparts_data',{headers:{Authorization:'Bearer '+TOKEN}}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});
+    }).then(function(doc){
+      var p=null, when=''; if(doc&&doc.fields){ var o={}; Object.keys(doc.fields).forEach(function(k){o[k]=fsVal(doc.fields[k]);}); p=findParts(o,0); when=doc.updateTime?fmt(Date.parse(doc.updateTime)):''; }
+      out.push('<div class="row">نسخة قاعدة البيانات الثانية: <b class="n">'+(p?p.length:0)+'</b> قطعة'+(when?' — آخر تحديث: '+when:'')+'</div>');
+      addSource('firestore','نسخة قاعدة البيانات الثانية',p,when);
+      say('smsg','',''); $('server').innerHTML=out.join(''); offer();
+    }).catch(function(e){ say('smsg','bad','تعذر قراءة الخادم بهذا الحساب ('+e.message+').'); });
+  }
+
+  /* ---------- restore ---------- */
+  function offer(){
+    var box=$('server'), any=false;
+    SOURCES.forEach(function(s,i){
+      var miss=s.parts.filter(function(x){ var k=ck(x); if(!k) return true; var cur=J((SERVER.cdb||{})[k]); return !cur||cur._del; });
+      s.missing=miss; if(!miss.length) return; any=true;
+      var d=document.createElement('div'); d.className='row good';
+      d.innerHTML='<b>'+s.label+'</b>'+(s.note?' — '+s.note:'')+'<br>فيها <b class="n">'+s.parts.length+'</b> قطعة، منها <b class="n">'+miss.length+'</b> غير موجودة الآن على الخادم.';
+      var b=document.createElement('button'); b.className='go'; b.setAttribute('data-src',s.id); b.textContent='استرجاع '+miss.length+' قطعة من هذه النسخة';
+      b.onclick=function(){ restore(s,b); }; d.appendChild(b); box.appendChild(d);
+    });
+    if(SOURCES.length){ $('dl').hidden=false; }
+    if(!any) say('rmsg',SERVER.live?'ok':'bad',SERVER.live?'لا يوجد ما يحتاج إلى استرجاع: القطع موجودة على الخادم.':'لم توجد أي نسخة فيها قطع، لا في هذا المتصفح ولا على الخادم. لا تفتح دنسو، وجرّب هذه الصفحة من جهاز أو متصفح آخر كان دنسو مفتوحاً فيه.');
+  }
+  $('dl').onclick=function(){
+    var all={savedAt:new Date().toISOString(),sources:SOURCES.map(function(s){return {id:s.id,label:s.label,note:s.note,parts:s.parts};}),local:{}};
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i); if(k==='dn_rt_p'||k==='dn_apikey'||k==='saved_email') continue; all.local[k]=localStorage.getItem(k);}
+    var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(all)],{type:'application/json'}));
+    a.download='denso-backup-'+new Date().toISOString().slice(0,10)+'.json'; document.body.appendChild(a); a.click(); a.remove();
+  };
+  function restore(s,btn){
+    var items=s.missing.slice(), now=Date.now(), total=items.length, done=0;
+    [].forEach.call(document.querySelectorAll('button.go'),function(b){b.disabled=true;});
+    say('rmsg','wait','جارٍ الاسترجاع… لا تغلق الصفحة.');
+    items.forEach(function(x,i){ if(x.id==null||x.id==='') x.id=now+i; });
+    function batch(){
+      if(!items.length){ finish(); return; }
+      var part=items.splice(0,300), p={};
+      part.forEach(function(x){ var v=JSON.parse(JSON.stringify(x)); v._t=now; p['c/db/'+ck(x)]=JSON.stringify(v); });
+      fetch(RTDB+'/densoparts.json?auth='+encodeURIComponent(TOKEN),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})
+        .then(function(r){ if(!r.ok) throw new Error('http '+r.status); done+=part.length; say('rmsg','wait','جارٍ الاسترجاع… '+done+' من '+total); batch(); })
+        .catch(function(e){ say('rmsg','bad','توقف الاسترجاع عند '+done+' من '+total+' ('+e.message+'). حدّث الصفحة وأعد المحاولة، لن يتكرر ما تم.'); });
+    }
+    function finish(){
+      var p={}; p['c/u/rescue/db']=now.toString(36)+Math.random().toString(36).slice(2,8);
+      fetch(RTDB+'/densoparts.json?auth='+encodeURIComponent(TOKEN),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})
+        .then(function(r){ if(!r.ok) throw new Error('http '+r.status); return rget('densoparts/c/db'); })
+        .then(function(cdb){ var n=0; Object.keys(cdb||{}).forEach(function(k){ var o=J(cdb[k]); if(o&&!o._del) n++; });
+          say('rmsg','ok','تم الاسترجاع. عدد القطع على الخادم الآن: '+n+'. يمكنك فتح دنسو من رابطه المعتاد.'); })
+        .catch(function(e){ say('rmsg','bad','رُفعت القطع لكن تعذر التأكيد ('+e.message+'). حدّث الصفحة لرؤية العدد.'); });
+    }
+    batch();
+  }
+  start();
 })();
 </script>
 </body>
