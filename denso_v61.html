@@ -2929,6 +2929,8 @@ function _canPush(){return !!window._fbLoaded||!!_cmap();}
 function _backupLocal(){try{localStorage.setItem('dn_conflict_bak',JSON.stringify({t:Date.now(),db:db,sups:sups,orders:orders,fut:window.futAll?futAll():[]}));}catch(e){}}
 /* نسجّل اللي تغيّر في هذا الجهاز من آخر مرة (مع وقت التعديل) */
 function _markDirty(){
+  /* fix63: أول تحميل لهذا الجهاز ما كمل في المرة السابقة: نبدأه من جديد بدل ما نبني على نصفه */
+  try{ if(!window._firstRunning&&localStorage.getItem('dn_first_pending')==='1'){ localStorage.removeItem('dn_cmap56');localStorage.removeItem('dn_cdirty56');localStorage.removeItem('dn_cseen56');localStorage.removeItem('dn_first_pending'); window._fbLoaded=false; return; } }catch(e){}
   var cm=_cmap(); if(!cm) return;
   /* fix62: قائمة فاضية في الجهاز مع خريطة مليانة = نسخة الجهاز ناقصة، مو حذف. نرجع نحمّل من السيرفر وما نحذف شي */
   var _bad=['db','sups','orders'].some(function(c){ return !_getL(c).length && Object.keys(cm[c]||{}).length>=5 && !(window._bulkDel&&window._bulkDel[c]); });
@@ -2989,6 +2991,7 @@ function _sync(push,cb){
   _sync.busy=true;
   var anyChange=false;
   function fin(st){
+    window._firstRunning=false;
     _sync.busy=false; var q=_sync.q||[]; _sync.q=[];
     try{ if(anyChange) _saveLocalAll(); }catch(e){}
     if(cb)try{cb(st,anyChange);}catch(e){} q.forEach(function(f){try{f(st,anyChange);}catch(e){}});
@@ -3002,6 +3005,7 @@ function _sync(push,cb){
   });
   function go(u){
     var first=!_cmap();
+    if(first){ window._firstRunning=true; try{localStorage.setItem('dn_first_pending','1');}catch(e){} }
     if(first){ var ld=false; try{ld=localStorage.getItem('dn_dirty')==='1'||localStorage.getItem('dn_fdirty')==='1';}catch(e){} if(ld) _backupLocal(); }
     var seen=first?{}:(_J('dn_cseen56',{})||{}), me=_dev(), need={};
     Object.keys(u).forEach(function(dv){ if(dv===me&&!first) return; var m=u[dv]||{}; _COLL.forEach(function(c){ if(m[c]!=null&&(!seen[dv]||seen[dv][c]!==m[c])) need[c]=1; }); });
@@ -3019,6 +3023,7 @@ function _sync(push,cb){
       }
       Object.keys(u).forEach(function(dv){ seen[dv]=u[dv]; }); _S('dn_cseen56',seen);
       if(first){ var cm=_cmap()||{}; _COLL.forEach(function(c){ if(!cm[c]) cm[c]=_mapC(_getL(c)); }); _S('dn_cmap56',cm); try{localStorage.setItem('dn_dirty','0');localStorage.setItem('dn_fdirty','0');}catch(e){} }
+      if(first){ window._firstRunning=false; try{localStorage.removeItem('dn_first_pending');}catch(e){} }
       window._fbLoaded=true;
       if(anyChange){ try{_saveLocalAll();}catch(e){} try{renderAllAfterSync();}catch(e){} }
       if(!push||!_anyDirty()){ fin(200); return; }
@@ -5387,6 +5392,146 @@ function restoreToyotaFromFile(){
     try{ renderOrders(); }catch(x){} try{ if(window.rvRender&&document.getElementById('tab-review').classList.contains('active')) rvRender(); }catch(x){}
     toast('الكمية صارت '+v+' ('+(v>from?'+':'')+(v-from)+')','ok');
   };
+})();
+</script>
+<script>
+/* ===================== v62 — نسخ احتياطي تلقائي يومي + استرجاع ===================== */
+(function(){
+  var BK='densoparts/bk', KEEP=30, KEEP_X=5;
+  function $(i){return document.getElementById(i);}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function today(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+  function snap(){return {app:'denso',ver:62,t:Date.now(),db:db||[],sups:sups||[],orders:orders||[],fut:window.futAll?futAll():[]};}
+  function meta(s,kind){return {t:s.t,n:s.db.length,s:s.sups.length,o:s.orders.length,f:s.fut.length,k:kind||'d'};}
+  /* طلب مستقل: رفض الصلاحية هنا ما يطلّعك من الحساب */
+  function req(method,path,body,cb){
+    withToken(function(tok){
+      if(!tok){cb(0,null);return;}
+      var x=new XMLHttpRequest(); x.open(method,RTDB+'/'+path+'.json?auth='+encodeURIComponent(tok),true);
+      x.setRequestHeader('Content-Type','application/json');
+      x.onload=function(){var d=null;try{d=JSON.parse(x.responseText);}catch(e){} cb(x.status,d);};
+      x.onerror=function(){cb(0,null);};
+      x.send(body===undefined?null:JSON.stringify(body));
+    });
+  }
+  var IDX=null, busy=false;
+  function ids(kind){return Object.keys(IDX||{}).filter(function(i){return ((IDX[i]||{}).k||'d')===kind;}).sort(function(a,b){return (IDX[b].t||0)-(IDX[a].t||0);});}
+  function put(id,s,kind,cb){
+    req('PUT',BK+'/d/'+id,JSON.stringify(s),function(st){
+      if(st!==200){cb(st);return;}
+      var m=meta(s,kind);
+      req('PUT',BK+'/idx/'+id,m,function(st2){ if(st2===200){IDX=IDX||{};IDX[id]=m;} cb(st2); });
+    });
+  }
+  function prune(){
+    var drop=ids('d').slice(KEEP).concat(ids('p').slice(KEEP_X),ids('m').slice(KEEP_X));
+    drop.forEach(function(id){ delete IDX[id]; req('DELETE',BK+'/idx/'+id,undefined,function(){ req('DELETE',BK+'/d/'+id,undefined,function(){}); }); });
+  }
+  function note(t,bad){var e=$('bk-msg'); if(e){e.textContent=t||''; e.style.color=bad?'#b91c1c':'var(--text2)';}}
+  /* نسخة اليوم: مرة وحدة في اليوم، بعد ما تتحمّل البيانات من السيرفر */
+  window.dnAutoBackup=function(){
+    if(busy||!window._fbLoaded||!db||!db.length) return;
+    var d=today(); try{ if(localStorage.getItem('dn_bk_day')===d) return; }catch(e){}
+    busy=true;
+    req('GET',BK+'/idx',undefined,function(st,idx){
+      if(st!==200){ busy=false; if(st===401||st===403){ try{localStorage.setItem('dn_bk_day',d);}catch(e){} note('تعذر حفظ النسخة الاحتياطية: لا توجد صلاحية على مكان النسخ.',true); } return; }
+      IDX=idx||{}; render();
+      if(IDX[d]){ busy=false; try{localStorage.setItem('dn_bk_day',d);}catch(e){} return; }
+      var last=ids('d')[0], ln=last?(IDX[last].n||0):0;
+      if(ln>=20&&db.length<ln*0.5){ busy=false; note('لم تؤخذ نسخة اليوم: عدد القطع ('+db.length+') أقل بكثير من آخر نسخة ('+ln+'). إن كان ذلك مقصوداً فاضغط «أخذ نسخة الآن».',true); return; }
+      put(d,snap(),'d',function(st2){
+        busy=false;
+        if(st2===200){ try{localStorage.setItem('dn_bk_day',d);}catch(e){} prune(); render(); }
+        else if(st2===401||st2===403){ try{localStorage.setItem('dn_bk_day',d);}catch(e){} note('تعذر حفظ النسخة الاحتياطية: لا توجد صلاحية على مكان النسخ.',true); }
+      });
+    });
+  };
+  window.dnBkNow=function(){
+    if(busy) return; if(!window._fbLoaded){toast('انتظر اكتمال تحميل البيانات','err');return;}
+    busy=true; note('جارٍ أخذ النسخة…');
+    put('m-'+Date.now(),snap(),'m',function(st){ busy=false; if(st===200){ prune(); render(); note(''); toast('تم أخذ النسخة ✓','ok'); } else { note('تعذر أخذ النسخة ('+st+').',true); } });
+  };
+  window.dnBkList=function(){
+    note('جارٍ التحميل…');
+    req('GET',BK+'/idx',undefined,function(st,idx){ if(st!==200){note('تعذر تحميل قائمة النسخ ('+st+').',true);return;} IDX=idx||{}; note(''); render(); });
+  };
+  window.dnBkFile=function(){
+    var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(snap())],{type:'application/json'}));
+    a.download='denso_full_backup_'+today()+'.json'; document.body.appendChild(a); a.click(); a.remove(); toast('تم تنزيل الملف ✓','ok');
+  };
+  function when(t){ try{return new Date(+t).toLocaleString('ar-SA-u-ca-gregory-nu-latn',{dateStyle:'medium',timeStyle:'short'});}catch(e){return '';} }
+  function render(){
+    var box=$('bk-list'); if(!box) return;
+    var all=Object.keys(IDX||{}).sort(function(a,b){return (IDX[b].t||0)-(IDX[a].t||0);});
+    if(!all.length){ box.innerHTML='<div class="bk-empty">لا توجد نسخ محفوظة بعد.</div>'; return; }
+    var KN={d:'يومية',m:'يدوية',p:'قبل استرجاع'};
+    box.innerHTML='<div class="bk-rows">'+all.map(function(id){var m=IDX[id]||{};
+      return '<div class="bk-row" data-bk="'+esc(id)+'"><div class="bk-i"><div class="bk-d">'+when(m.t)+' <span class="bk-k">'+(KN[m.k||'d']||'')+'</span></div>'+
+        '<div class="bk-c">القطع: '+(m.n||0)+' · الموردون: '+(m.s||0)+' · الطلبات: '+(m.o||0)+'</div></div>'+
+        '<button class="btn sm" onclick="dnBkRestore(\''+esc(id)+'\')">استرجاع</button></div>';}).join('')+'</div>';
+  }
+  /* تطبيق نسخة: تصير بيانات البرنامج مطابقة لها تماماً، في هذا الجهاز وعلى السيرفر وباقي الأجهزة */
+  function apply(s){
+    window._bulkDel={db:1,sups:1,orders:1};
+    db=s.db; if(s.sups&&s.sups.length) sups=s.sups; if(s.orders) orders=s.orders;
+    if(s.fut&&window.futReplace) futReplace(s.fut);
+    saveDB(); saveSups(); saveOrders();
+    window._bulkDel=null;
+    try{renderAllAfterSync();}catch(e){}
+  }
+  function valid(s){ return s&&Array.isArray(s.db)&&s.db.length>0&&s.db.every(function(x){return x&&typeof x==='object';}); }
+  function restoreFrom(s,label){
+    if(!valid(s)){ toast('النسخة غير صالحة أو فارغة','err'); return; }
+    if(!window._fbLoaded){ toast('انتظر اكتمال تحميل البيانات','err'); return; }
+    if(!confirm('استرجاع '+label+'؟\n\nفيها '+s.db.length+' قطعة. ستصبح بيانات البرنامج مطابقة لها في كل الأجهزة.\nتؤخذ نسخة من الوضع الحالي أولاً، ويمكنك الرجوع إليها من القائمة.')) return;
+    busy=true; note('جارٍ حفظ نسخة من الوضع الحالي…');
+    put('p-'+Date.now(),snap(),'p',function(st){
+      busy=false;
+      if(st!==200){ note('لم يتم الاسترجاع: تعذر حفظ نسخة من الوضع الحالي ('+st+').',true); return; }
+      apply(s); prune(); render(); note(''); toast('تم الاسترجاع: '+s.db.length+' قطعة ✓','ok');
+    });
+  }
+  window.dnBkRestore=function(id){
+    if(busy) return; var m=(IDX||{})[id]; if(!m) return;
+    note('جارٍ تحميل النسخة…');
+    req('GET',BK+'/d/'+id,undefined,function(st,raw){
+      note('');
+      if(st!==200||!raw){ toast('تعذر تحميل النسخة','err'); return; }
+      var s=null; try{s=typeof raw==='string'?JSON.parse(raw):raw;}catch(e){}
+      restoreFrom(s,'نسخة '+when(m.t));
+    });
+  };
+  window.dnBkFromFile=function(){
+    var f=$('bk-file'); if(!f||!f.files||!f.files[0]){ toast('اختر ملف النسخة أولاً','err'); return; }
+    var r=new FileReader();
+    r.onload=function(){
+      var o=null,s=null; try{o=JSON.parse(r.result);}catch(e){}
+      function P(v){try{return typeof v==='string'?JSON.parse(v):v;}catch(e){return null;}}
+      if(Array.isArray(o)) s={db:o};                                   /* ملف «تصدير نسخة احتياطية» القديم: القطع فقط */
+      else if(o&&Array.isArray(o.db)) s=o;                             /* ملف «تنزيل نسخة كملف» */
+      else if(o&&o.local&&o.local.denso_v42) s={db:P(o.local.denso_v42)||[],sups:P(o.local.dn_s)||[],orders:P(o.local.dn_orders)||null}; /* ملف صفحة الاسترجاع */
+      restoreFrom(s,'الملف «'+f.files[0].name+'»');
+    };
+    r.readAsText(f.files[0]);
+  };
+  /* الواجهة */
+  var css=document.createElement('style');
+  css.textContent='.bk-rows{margin-top:10px;border-top:.5px solid var(--border2)}.bk-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:.5px solid var(--border2)}.bk-i{flex:1;min-width:0}.bk-d{font-size:14px;font-weight:600;color:var(--text)}.bk-k{font-size:11px;font-weight:500;color:var(--text2);border:.5px solid var(--border2);border-radius:20px;padding:1px 8px;margin-inline-start:6px;white-space:nowrap}.bk-c{font-size:12px;color:var(--text2);margin-top:2px}.bk-row .btn{white-space:nowrap;flex:none}.bk-empty{font-size:13px;color:var(--text2);margin-top:10px}.bk-note{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px}#bk-msg{font-size:13px;margin-top:8px;min-height:18px}';
+  document.head.appendChild(css);
+  var card=document.createElement('div'); card.className='card'; card.id='bk-card'; card.style.marginBottom='1rem';
+  card.innerHTML='<div class="slbl">النسخ الاحتياطية التلقائية</div>'+
+    '<div class="bk-note">تؤخذ نسخة كاملة من القطع والأسعار والموردين والطلبات والطلب القادم مرة كل يوم، ويُحتفظ بآخر '+KEEP+' يوماً. الاسترجاع يعيد البرنامج كما كان في تلك النسخة.</div>'+
+    '<div class="btn-row"><button class="btn prim" onclick="dnBkNow()">أخذ نسخة الآن</button><button class="btn" onclick="dnBkFile()">تنزيل نسخة كملف</button><button class="btn" onclick="dnBkList()">عرض النسخ</button></div>'+
+    '<div id="bk-msg"></div><div id="bk-list"></div>'+
+    '<div class="slbl" style="margin-top:14px">استرجاع من ملف</div>'+
+    '<div class="fr" style="margin-bottom:8px"><input type="file" id="bk-file" accept=".json,application/json" style="flex:1;font-size:13px"></div>'+
+    '<div class="btn-row"><button class="btn" onclick="dnBkFromFile()">استرجاع من الملف</button></div>';
+  var anchor=document.querySelector('.exp-box');
+  if(anchor&&anchor.parentNode) anchor.parentNode.insertBefore(card,anchor);
+  var vv=document.createElement('div'); vv.id='dn-ver'; vv.style.cssText='font-size:12px;color:var(--text3);text-align:center;padding:14px 0 6px'; vv.textContent='الإصدار 62'; var cont=card.parentNode; if(cont) cont.appendChild(vv);
+  /* التشغيل: بعد كل مزامنة ناجحة نشوف إذا نسخة اليوم ما انأخذت */
+  setInterval(function(){ try{ if(window._appStarted) dnAutoBackup(); }catch(e){} },20000);
+  setTimeout(function tick(){ try{ if(window._appStarted&&window._fbLoaded) dnAutoBackup(); else setTimeout(tick,1500); }catch(e){} },1500);
 })();
 </script>
 </body></html>
