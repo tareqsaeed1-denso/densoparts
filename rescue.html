@@ -62,7 +62,7 @@
     out.push('<div class="row">النسخة الحالية في هذا المتصفح: <b class="n">'+(partsIn(cur)||[]).length+'</b> قطعة</div>');
     addSource('local-current','النسخة الحالية في هذا المتصفح',partsIn(cur));
     for(var i=0;i<localStorage.length;i++){
-      var k=localStorage.key(i); if(k==='denso_v42') continue;
+      var k=localStorage.key(i); if(k==='denso_v42'||k==='dn_rhist'||k==='dn_rescue_copy') continue;
       var v=J(localStorage.getItem(k)); if(!v) continue;
       var cand=partsIn(v)||(v&&typeof v==='object'&&!Array.isArray(v)?partsIn(v.db):null);
       if(cand){ addSource('local-'+k,'نسخة أخرى في هذا المتصفح ('+k+')',cand,v.t?fmt(v.t):''); out.push('<div class="row">نسخة أخرى محفوظة ('+k+'): <b class="n">'+cand.length+'</b> قطعة</div>'); }
@@ -133,7 +133,14 @@
       var d=document.createElement('div'); d.className='row good';
       d.innerHTML='<b>'+s.label+'</b>'+(s.note?' — '+s.note:'')+'<br>فيها <b class="n">'+s.parts.length+'</b> قطعة، منها <b class="n">'+miss.length+'</b> غير موجودة الآن على الخادم.';
       var b=document.createElement('button'); b.className='go'; b.setAttribute('data-src',s.id); b.textContent='استرجاع '+miss.length+' قطعة من هذه النسخة';
-      b.onclick=function(){ restore(s,b); }; d.appendChild(b); box.appendChild(d);
+      b.onclick=function(){ restore(s,b); }; d.appendChild(b);
+      if(s.id==='local-current'){
+        var f=document.createElement('button'); f.className='go'; f.id='full'; f.textContent='رفع نسخة هذا المتصفح كاملة ('+s.parts.length+' قطعة مع الموردين)';
+        f.onclick=function(){ fullUpload(s); };
+        var n=document.createElement('div'); n.className='small'; n.textContent='يرفع كل القطع والموردين كما هي في هذا المتصفح، فتصبح هي المعتمدة على الخادم وفي بقية الأجهزة.';
+        d.appendChild(f); d.appendChild(n);
+      }
+      box.appendChild(d);
     });
     if(SOURCES.length){ $('dl').hidden=false; }
     if(!any) say('rmsg',SERVER.live?'ok':'bad',SERVER.live?'لا يوجد ما يحتاج إلى استرجاع: القطع موجودة على الخادم.':'لم توجد أي نسخة فيها قطع، لا في هذا المتصفح ولا على الخادم. لا تفتح دنسو، وجرّب هذه الصفحة من جهاز أو متصفح آخر كان دنسو مفتوحاً فيه.');
@@ -164,6 +171,30 @@
         .then(function(cdb){ var n=0; Object.keys(cdb||{}).forEach(function(k){ var o=J(cdb[k]); if(o&&!o._del) n++; });
           say('rmsg','ok','تم الاسترجاع. عدد القطع على الخادم الآن: '+n+'. يمكنك فتح دنسو من رابطه المعتاد.'); })
         .catch(function(e){ say('rmsg','bad','رُفعت القطع لكن تعذر التأكيد ('+e.message+'). حدّث الصفحة لرؤية العدد.'); });
+    }
+    batch();
+  }
+  function patch(p){ return fetch(RTDB+'/densoparts.json?auth='+encodeURIComponent(TOKEN),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}).then(function(r){ if(!r.ok) throw new Error('http '+r.status); }); }
+  function fullUpload(s){
+    var now=Date.now(), sups=J(localStorage.getItem('dn_s'))||[], jobs=[], done=0;
+    [].forEach.call(document.querySelectorAll('button.go'),function(b){b.disabled=true;});
+    s.parts.forEach(function(x){ var k=ck(x); if(k) jobs.push(['c/db/'+k,x]); });
+    (Array.isArray(sups)?sups:[]).forEach(function(x){ var k=ck(x); if(k&&x&&!x._del) jobs.push(['c/sups/'+k,x]); });
+    var total=jobs.length;
+    say('rmsg','wait','جارٍ الرفع… لا تغلق الصفحة.');
+    function batch(){
+      if(!jobs.length){ finish(); return; }
+      var part=jobs.splice(0,300), p={};
+      part.forEach(function(j){ var v=JSON.parse(JSON.stringify(j[1])); v._t=now; p[j[0]]=JSON.stringify(v); });
+      patch(p).then(function(){ done+=part.length; say('rmsg','wait','جارٍ الرفع… '+done+' من '+total); batch(); })
+        .catch(function(e){ say('rmsg','bad','توقف الرفع عند '+done+' من '+total+' ('+e.message+'). حدّث الصفحة وأعد المحاولة.'); });
+    }
+    function finish(){
+      var tok=now.toString(36)+Math.random().toString(36).slice(2,8), p={}; p['c/u/rescue/db']=tok; p['c/u/rescue/sups']=tok;
+      patch(p).then(function(){ return Promise.all([rget('densoparts/c/db'),rget('densoparts/c/sups')]); })
+        .then(function(r){ var cnt=function(m){var n=0; Object.keys(m||{}).forEach(function(k){var o=J(m[k]); if(o&&!o._del) n++;}); return n;};
+          say('rmsg','ok','تم الرفع. على الخادم الآن: '+cnt(r[0])+' قطعة، وعدد الموردين: '+cnt(r[1])+'. يمكنك فتح دنسو من رابطه المعتاد.'); })
+        .catch(function(e){ say('rmsg','bad','رُفعت البيانات لكن تعذر التأكيد ('+e.message+'). حدّث الصفحة لرؤية العدد.'); });
     }
     batch();
   }
